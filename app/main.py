@@ -1,53 +1,26 @@
-from datetime import datetime
-
-from core.database import engine
-from core.database import Base
-
-from models.event_type import EventType
-from models.event import Event
-from models.event_category import EventCategory
-
-from repositories.event_type import EventTypeRepository
-from repositories.event import EventRepository
-
-from utils import object_as_dict
+import flet as ft
 
 
-Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
+def main(page: ft.Page):
+    page.title = "Мероприятия"
 
-sample_type = {
-    'name': 'Выставка'
-}
+    def add_clicked(e):
+        page.update()
 
-result_event_type = EventTypeRepository().create(**sample_type)
-print(result_event_type.id)
-print(object_as_dict(result_event_type))
-sample_event = {
-    'description': 'описание',
-    'date': datetime.now(),
-    'category': EventCategory.entertainment,
-    'event_type_id': result_event_type.id
-}
-# создание мероприятия
-result_event = EventRepository().create(**sample_event)
-print(object_as_dict(result_event))
+    def on_change(e):
+        print(tabs.selected_index)
 
-#получение списка мероприятий
-result = EventRepository().get_list_items_by_filter()
-print(result)
+    page.theme_mode = ft.ThemeMode.LIGHT
 
-# редактирование мероприятия
-update_data = {
-    'description': 'описание123'
-}
-result = EventRepository().update_by_id(1, **update_data)
-print(object_as_dict(result))
+    tabs = ft.Tabs(
+        selected_index=0,
+        tabs=[ft.Tab(text="Развлечения"), ft.Tab(text="Просвещение"), ft.Tab(text="Образование")],
+        on_change=on_change
+    )
 
-result = EventRepository().get_list_items_by_filter()
-print(result)
+    page.add(tabs)
 
-# удаление мероприятия
-result = EventRepository().delete_by_id(1)
-result = EventRepository().get_list_items_by_filter()
-print(result)
+    page.add(ft.FloatingActionButton(icon=ft.icons.ADD, on_click=add_clicked))
+
+
+ft.app(target=main)
