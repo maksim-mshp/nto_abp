@@ -1,5 +1,6 @@
 from sqlalchemy import inspect
 
+CATEGORIES = ['Развлечения', 'Просвещение', 'Образование']
 
 def object_as_dict(obj):
     return {
