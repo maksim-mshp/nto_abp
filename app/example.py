@@ -5,7 +5,6 @@ from core.database import Base
 
 from models.event_type import EventType
 from models.event import Event
-from models.event_category import EventCategory
 
 from repositories.event_type import EventTypeRepository
 from repositories.event import EventRepository
@@ -26,7 +25,7 @@ print(object_as_dict(result_event_type))
 sample_event = {
     'description': 'описание',
     'date': datetime.now(),
-    'category': EventCategory.entertainment,
+    'category': 'просвещение',
     'event_type_id': result_event_type.id
 }
 # создание мероприятия
