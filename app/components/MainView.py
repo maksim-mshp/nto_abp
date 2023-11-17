@@ -8,11 +8,11 @@ class MainView:
         self.page = page
 
         self.lv = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
-        self.modal = CreateEvent(close_event=self.page.update)
+        self.modal = CreateEvent(self.page, close_event=self.page.update)
 
         self.tabs = ft.Tabs(
             selected_index=0,
-            tabs=[ft.Tab(text=x) for x in CATEGORIES],
+            tabs=[ft.Tab(text='Все мероприятия')] + [ft.Tab(text=x) for x in CATEGORIES],
             on_change=self.on_change
         )
 
