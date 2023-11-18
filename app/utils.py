@@ -7,6 +7,7 @@ from core.database import create_database
 
 from repositories.event import EventRepository
 from repositories.event_type import EventTypeRepository
+from core.config import config
 
 CATEGORIES = ['Развлечения', 'Просвещение', 'Образование']
 
@@ -19,7 +20,7 @@ def object_as_dict(obj):
 
 
 def add_sample_data():
-    if os.path.exists('../sqlite.db'):
+    if os.path.exists(f'../{config.DATABASE_NAME}'):
         create_database()
         return
     create_database()
@@ -32,14 +33,14 @@ def add_sample_data():
     events = [
         {
             'title': 'Выставка «Архитектура и мода. В потоке времени»',
-            'description': 'Очень круто событие приходите!!!',
+            'description': 'Очень крутое событие приходите!!!',
             'date': datetime(2023, 11, 18),
             'category': CATEGORIES[1],
             'event_type_id': 4
         },
         {
             'title': 'Мастер-классы по эстрадному вокалу «Мне нужно петь» в ноябре',
-            'description': 'Очень круто событие приходите!!!',
+            'description': 'Очень крутое событие приходите!!!',
             'date': datetime(2023, 11, 25),
             'category': CATEGORIES[2],
             'event_type_id': 5
@@ -49,31 +50,53 @@ def add_sample_data():
         EventRepository().create(**event)
 
 
-def get_types() -> dict:
+def get_types() -> list:
     data = EventTypeRepository().get_list_items_by_filter()
-    result = {}
-    for i in data:
-        t = object_as_dict(i)
-        result[t['name']] = t['id']
-    return result
+    return [object_as_dict(i)['id'] for i in data]
 
 
-def get_events():
-    result = EventRepository().get_list_items_by_filter()
+def get_formatted_date(date: datetime) -> str:
+    return date.strftime('%d.%m.%Y')
+
+
+def get_type_by_id(id: int) -> str:
+    filt = {
+        'id': id
+    }
+    data = EventTypeRepository().get_list_items_by_filter(**filt)[0]
+    return object_as_dict(data)['name']
+
+
+def get_type_id_by_name(name: str) -> int:
+    filt = {
+        'name': name
+    }
+    data = EventTypeRepository().get_list_items_by_filter(**filt)[0]
+    return object_as_dict(data)['id']
+
+
+def get_events(category=None):
+    if category is None:
+        result = EventRepository().get_list_items_by_filter()
+    else:
+        filt = {
+            'category': category
+        }
+        result = EventRepository().get_list_items_by_filter(**filt)
     return [object_as_dict(i) for i in result]
 
 
 def create_event(name: str, date: datetime, event_type: str, description: str, category: str):
     event = {
-        'name': name.strip(),
+        'title': name.strip(),
         'description': description.strip(),
         'date': date,
         'category': category,
-        'event_type_id': get_types()[event_type]
+        'event_type_id': get_type_id_by_name(event_type)
     }
 
     EventRepository().create(**event)
 
 
 if __name__ == '__main__':
-    print(get_types())
+    print(get_type_id_by_name('Cпектакль'))

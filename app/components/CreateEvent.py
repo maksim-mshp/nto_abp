@@ -12,7 +12,7 @@ class CreateEvent:
         self.categoty = categoty
 
         self.type = ft.Dropdown(
-            options=[ft.dropdown.Option(i) for i in utils.get_types().keys()],
+            options=[ft.dropdown.Option(i) for i in utils.get_types()],
             label='Вид мероприятия',
             on_change=self._on_type_change
         )
@@ -83,7 +83,7 @@ class CreateEvent:
 
     def _get_btn_text(self):
         if self.date.value is not None:
-            return self.date.value.strftime('%d.%m.%Y')
+            return utils.get_formatted_date(self.date.value)
         return 'Выберите дату'
 
     def _cancel(self, e):
