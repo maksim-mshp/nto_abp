@@ -6,19 +6,24 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from core.database import Base
 from models.job_room import JobRoom
 from models.job_type import JobType
+from models.event import Event
 
 
 class Job(Base):
     __tablename__ = 'jobs'
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str]
     description: Mapped[str]
 
+    event_id: Mapped[int] = mapped_column(ForeignKey("events.id"))
+    event: Mapped["Event"] = relationship("Event", lazy="joined")
+
     job_type_id: Mapped[int] = mapped_column(ForeignKey("jobs_type.id"))
-    job_type: Mapped["JobType"] = relationship("JobType")
+    job_type: Mapped["JobType"] = relationship("JobType", lazy="joined")
 
     job_room_id: Mapped[int] = mapped_column(ForeignKey("jobs_room.id"))
-    job_room: Mapped["JobRoom"] = relationship("JobRoom")
+    job_room: Mapped["JobRoom"] = relationship("JobRoom", lazy="joined")
 
     registration_date: Mapped[datetime] = mapped_column(default=datetime.now())
     deadline: Mapped[datetime]

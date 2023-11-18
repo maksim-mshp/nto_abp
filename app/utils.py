@@ -1,11 +1,16 @@
 import os
 import flet as ft
 from datetime import datetime
+
 from sqlalchemy import inspect
+
 from core.database import create_database
+
 from repositories.event import EventRepository
 from repositories.event_type import EventTypeRepository
-from core.config import config
+from repositories.job import JobRepository
+from repositories.job_type import JobTypeRepository
+from repositories.job_room import JobRoomRepository
 
 CATEGORIES = ['Развлечения', 'Просвещение', 'Образование']
 
@@ -47,10 +52,84 @@ def add_sample_data():
             'date': datetime(2023, 11, 25),
             'category': CATEGORIES[2],
             'event_type_id': 5
-        }
+        },
+        {
+            'title': 'Спектакль-концерт в рамках проекта «П» в кубе: «Неделя просвещения»',
+            'description': 'Очень круто событие приходите!!!',
+            'date': datetime(2023, 11, 19),
+            'category': CATEGORIES[1],
+            'event_type_id': 5
+        },
     ]
     for event in events:
         EventRepository().create(**event)
+    # -------- Помещения ----------
+    jobs_room = ['Концертный зал', 'Выставочный зал', 'Театральная сцена', 'Звукозаписывающая студия']
+    for room in jobs_room:
+        JobRoomRepository().create(name=room)
+    # -------- Виды работ ----------
+    jobs_type = ['Уборка', 'Установка экспонатов', 'Настройка оборудования', 'Настройка освещения']
+    for room in jobs_type:
+        JobTypeRepository().create(name=room)
+    # -------- Работы ----------
+    jobs = [
+        {
+            'title': 'Подготовка и установка экспонатов в выставочном зале',
+            'description': '',
+            'event_id': 1,
+            'job_type_id': 2,
+            'job_room_id': 2,
+            'deadline': datetime(2023, 11, 25),
+            'status': 'Создано'
+        },
+        {
+            'title': 'Настройка освещения в концертном зале',
+            'description': '',
+            'event_id': 3,
+            'job_type_id': 4,
+            'job_room_id': 1,
+            'deadline': datetime(2023, 11, 25),
+            'status': 'Создано'
+        },
+        {
+            'title': 'Настройка освещения в выставочном зале',
+            'description': '',
+            'event_id': 1,
+            'job_type_id': 4,
+            'job_room_id': 2,
+            'deadline': datetime(2023, 11, 25),
+            'status': 'К работе'
+        },
+        {
+            'title': 'Настройка звукозаписывающего оборудования в концертном зале',
+            'description': '',
+            'event_id': 3,
+            'job_type_id': 3,
+            'job_room_id': 1,
+            'deadline': datetime(2023, 11, 25),
+            'status': 'К работе'
+        },
+        {
+            'title': 'Уборка выставочного зала',
+            'description': '',
+            'event_id': 1,
+            'job_type_id': 1,
+            'job_room_id': 2,
+            'deadline': datetime(2023, 11, 25),
+            'status': 'Выполнено'
+        },
+        {
+            'title': 'Уборка концертного зала',
+            'description': '',
+            'event_id': 3,
+            'job_type_id': 1,
+            'job_room_id': 1,
+            'deadline': datetime(2023, 11, 25),
+            'status': 'Выполнено'
+        }
+    ]
+    for job in jobs:
+        JobRepository().create(**job)
 
 
 def get_types() -> list:
