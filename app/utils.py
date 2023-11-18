@@ -29,13 +29,13 @@ def add_sample_data():
         {
             'description': 'Выставка «Архитектура и мода. В потоке времени»',
             'date': datetime(2023, 11, 18),
-            'category': 'Просвещение',
+            'category': CATEGORIES[1],
             'event_type_id': 4
         },
         {
             'description': 'Мастер-классы по эстрадному вокалу «Мне нужно петь» в ноябре',
             'date': datetime(2023, 11, 25),
-            'category': 'Образовние',
+            'category': CATEGORIES[2],
             'event_type_id': 5
         }
     ]
@@ -43,6 +43,31 @@ def add_sample_data():
         EventRepository().create(**event)
 
 
-def get_types():
-    result = EventTypeRepository().get_list_items_by_filter()
+def get_types() -> dict:
+    data = EventTypeRepository().get_list_items_by_filter()
+    result = {}
+    for i in data:
+        t = object_as_dict(i)
+        result[t['name']] = t['id']
+    return result
+
+
+def get_events():
+    result = EventRepository().get_list_items_by_filter()
     return [object_as_dict(i) for i in result]
+
+
+def create_event(name: str, date: datetime, event_type: str, description: str, category: str):
+    event = {
+        'name': name.strip(),
+        'description': description.strip(),
+        'date': date,
+        'category': category,
+        'event_type_id': get_types()[event_type]
+    }
+
+    EventRepository().create(**event)
+
+
+if __name__ == '__main__':
+    print(get_types())

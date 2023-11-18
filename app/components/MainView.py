@@ -8,7 +8,6 @@ class MainView:
         self.page = page
 
         self.lv = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
-        self.modal = CreateEvent(self.page, close_event=self.page.update)
 
         self.tabs = ft.Tabs(
             selected_index=0,
@@ -19,6 +18,10 @@ class MainView:
         page.add(self.tabs)
         page.add(self.lv)
         page.add(ft.FloatingActionButton(icon=ft.icons.ADD, on_click=self.add_clicked))
+
+        self.modal = CreateEvent(self.page,
+                                 close_event=self.page.update,
+                                 categoty=CATEGORIES[self.tabs.selected_index])
 
     def add_clicked(self, e):
         self.page.dialog = self.modal.dialog

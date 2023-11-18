@@ -13,8 +13,6 @@ def main(page: ft.Page):
     Base.metadata.create_all(engine)
     add_sample_data()
 
-    print(get_types())
-
     main_view = MainView(page)
 
 
