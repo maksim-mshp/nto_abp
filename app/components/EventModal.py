@@ -6,10 +6,10 @@ from app import utils
 
 class EventModal:
 
-    def __init__(self, page: ft.Page, close_event, categoty=None, id=None):
+    def __init__(self, page: ft.Page, close_event, category=None, id=None):
         self.page = page
         self.close_event = close_event
-        self.categoty = categoty
+        self.category = category
         self.id = id
 
         self.type = ft.Dropdown(
@@ -60,16 +60,36 @@ class EventModal:
         self._reset()
         self.date_btn.text = self._get_btn_text()
 
+        text_btn_style = ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=10),
+            padding=15
+        )
+
         self.dialog = ft.AlertDialog(
             title=ft.Text("Создание мероприятия" if self.id is None else 'Редактирование мероприятия'),
             content=self.form,
             actions=[
-                ft.TextButton("Отмена", on_click=self._cancel),
-                ft.TextButton("Сохранить", on_click=self._save),
+                ft.Row([
+                    ft.TextButton("Отмена", on_click=self._cancel, style=text_btn_style),
+                    ft.TextButton("Сохранить", on_click=self._save, style=text_btn_style),
+                ], tight=True)
             ],
-            actions_alignment=ft.MainAxisAlignment.END,
+            actions_alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             modal=True
         )
+
+        if self.id is None:
+            self.dialog.actions_alignment = ft.MainAxisAlignment.END
+            return
+
+        self.dialog.actions.insert(0, ft.TextButton("Удалить мероприятие", on_click=self._remove, style=ft.ButtonStyle(
+            color=ft.colors.RED_ACCENT_700,
+            bgcolor={
+                ft.MaterialState.HOVERED: ft.colors.RED_100,
+            },
+            shape=ft.RoundedRectangleBorder(radius=10),
+            padding=15
+        )))
 
     def _reset(self):
         self.name.error_text = None
@@ -84,6 +104,7 @@ class EventModal:
             return
 
         event = utils.get_event_by_id(self.id)
+        self.category = event['category']
         self.name.value = event['title']
         self.type.value = utils.get_type_by_id(event['event_type_id'])
         self.date.value = event['date']
@@ -103,6 +124,11 @@ class EventModal:
         return 'Выберите дату'
 
     def _cancel(self, e):
+        self.close()
+
+    def _remove(self, e):
+        utils.EventRepository().delete_by_id(self.id)
+        self.id = None
         self.close()
 
     def _open_datepicker(self, e):
@@ -143,5 +169,10 @@ class EventModal:
             self.dialog.update()
             return
 
-        utils.create_event(self.name.value, self.date.value, self.type.value, self.description.value, self.categoty)
+        if self.id is None:
+            utils.create_event(self.name.value, self.date.value, self.type.value, self.description.value, self.category)
+        else:
+            utils.update_event(self.id, self.name.value, self.date.value, self.type.value, self.description.value,
+                               self.category)
+
         self.close()

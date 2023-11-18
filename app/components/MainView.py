@@ -32,13 +32,17 @@ class MainView:
     def add_clicked(self, e):
         self.modal = EventModal(self.page,
                                 close_event=self.page.update,
-                                categoty=CATEGORIES[self.tabs.selected_index - 1])
+                                category=CATEGORIES[self.tabs.selected_index - 1])
         self.page.dialog = self.modal.dialog
         self.modal.open()
         self.page.update()
 
+    def on_edit_modal_close(self):
+        self.on_change()
+        self.page.update()
+
     def open_modal(self, e):
-        self.modal = EventModal(self.page, close_event=self.page.update, id=e.control.data)
+        self.modal = EventModal(self.page, close_event=self.on_edit_modal_close, id=e.control.data)
         self.page.dialog = self.modal.dialog
         self.modal.open()
         self.page.update()

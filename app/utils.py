@@ -105,6 +105,17 @@ def create_event(name: str, date: datetime, event_type: str, description: str, c
 
     EventRepository().create(**event)
 
+def update_event(id: int, name: str, date: datetime, event_type: str, description: str, category: str):
+    event = {
+        'title': name.strip(),
+        'description': description.strip(),
+        'date': date,
+        'category': category,
+        'event_type_id': get_type_id_by_name(event_type)
+    }
+
+    EventRepository().update_by_id(id, **event)
+
 
 if __name__ == '__main__':
     print(get_event_by_id(1))
