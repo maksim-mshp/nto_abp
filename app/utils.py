@@ -4,6 +4,7 @@ from datetime import datetime
 
 from sqlalchemy import inspect
 
+from core.config import config
 from core.database import create_database
 
 from repositories.event import EventRepository
@@ -141,7 +142,9 @@ def get_formatted_date(date: datetime) -> str:
     return date.strftime('%d.%m.%Y')
 
 
-def get_type_by_id(id: int) -> str:
+def get_type_by_id(id: int):
+    if id is None:
+        return None
     filt = {
         'id': id
     }
@@ -179,7 +182,7 @@ def create_event(name: str, date: datetime, event_type: str, description: str, c
         'description': description.strip(),
         'date': date,
         'category': category,
-        'event_type_id': get_type_id_by_name(event_type)
+        'event_type_id': get_type_id_by_name(event_type) if event_type else None
     }
 
     EventRepository().create(**event)

@@ -1,6 +1,5 @@
 import datetime
 import flet as ft
-
 from app import utils
 
 
@@ -105,6 +104,9 @@ class EventModal:
         self.date.value = event['date']
         self.description.value = event['description']
 
+        if self.category == utils.CATEGORIES[2]:
+            self.type.visible = False
+
     def close(self):
         self.dialog.open = False
         self.close_event()
@@ -152,7 +154,7 @@ class EventModal:
         if self.name.value.strip() == '':
             self.name.error_text = 'Введите название'
             err = True
-        if self.type.value is None:
+        if (self.type.value is None) and self.category != utils.CATEGORIES[2]:
             self.type.error_text = 'Выберите вид'
             err = True
 

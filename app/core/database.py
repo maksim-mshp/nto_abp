@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from .config import config
 
-engine = create_engine(config.DATABASE_URL, echo=True)  # echo=True for database debug
+engine = create_engine(config.DATABASE_URL, echo=False)  # echo=True for database debug
 
 session_maker = sessionmaker(engine, expire_on_commit=False)
 

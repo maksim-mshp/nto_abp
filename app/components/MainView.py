@@ -1,7 +1,7 @@
 import flet as ft
-from app.components.EventModal import EventModal
-from app.components.TypesModal import TypesModal
-from app.utils import *
+from components.EventModal import EventModal
+from components.TypesModal import TypesModal
+from utils import *
 
 
 class MainView:
@@ -9,14 +9,7 @@ class MainView:
         self.page = page
         self.modal = None
 
-        self.dt = ft.Column([ft.DataTable(
-            columns=[
-                ft.DataColumn(ft.Text("Название")),
-                ft.DataColumn(ft.Text("Вид")),
-                ft.DataColumn(ft.Text("Дата")),
-            ],
-            width=100000,
-        )], scroll=ft.ScrollMode.ADAPTIVE, expand=1)
+        self.dt = None
 
         self.nothing = ft.Container(ft.Text("Ничего не найдено"), width=100000, padding=50,
                                     alignment=ft.alignment.center)
@@ -66,14 +59,29 @@ class MainView:
 
     def on_change(self, e=None):
         category = CATEGORIES[self.tabs.selected_index]
-
         events = get_events(category)
+        self.safe_remove(self.dt)
+        self.dt = ft.Column([ft.DataTable(
+            columns=[
+                ft.DataColumn(ft.Text("Название")),
+                ft.DataColumn(ft.Text("Дата")),
+            ],
+            width=100000,
+        )], scroll=ft.ScrollMode.ADAPTIVE, expand=1)
+
+        if self.tabs.selected_index != 2:
+            self.dt.controls[0].columns.insert(1, ft.DataColumn(ft.Text("Вид")))
 
         self.dt.controls[0].rows.clear()
         if len(events) > 0:
             self.dt.controls[0].rows = [
                 ft.DataRow(
                     cells=[
+                        ft.DataCell(ft.Text(event['title'])),
+                        ft.DataCell(ft.Text(get_formatted_date(event['date']))),
+                    ]
+                    if self.tabs.selected_index == 2 else
+                    [
                         ft.DataCell(ft.Text(event['title'])),
                         ft.DataCell(ft.Text(get_type_by_id(event['event_type_id']))),
                         ft.DataCell(ft.Text(get_formatted_date(event['date']))),
@@ -84,11 +92,9 @@ class MainView:
             ]
 
             self.safe_remove(self.nothing)
-            self.safe_remove(self.dt)
             self.page.add(self.dt)
         else:
             self.safe_remove(self.nothing)
-            self.safe_remove(self.dt)
             self.page.add(self.nothing)
 
         self.page.update()

@@ -1,7 +1,6 @@
 import flet as ft
-from app import utils
-from app.repositories.event import EventRepository
-from app.repositories.event_type import EventTypeRepository
+import utils
+from repositories.event_type import EventTypeRepository
 
 
 class EventType:
