@@ -1,22 +1,10 @@
 from datetime import datetime
 
-from core.database import engine
-from core.database import Base
-
-from models.event_type import EventType
-from models.event import Event
-from models.job_type import JobType
-from models.job_room import JobRoom
-from models.job import Job
-
 from repositories.event_type import EventTypeRepository
 from repositories.event import EventRepository
 
 from utils import object_as_dict, add_sample_data
 
-
-Base.metadata.drop_all(engine)
-Base.metadata.create_all(engine)
 add_sample_data()
 
 sample_type = {
@@ -45,13 +33,13 @@ print(result)
 update_data = {
     'description': 'описание123'
 }
-result = EventRepository().update_by_id(3, **update_data)
+result = EventRepository().update_by_id(result_event.id, **update_data)
 print(object_as_dict(result))
 
 result = EventRepository().get_list_items_by_filter()
 print(result)
 
 # удаление мероприятия
-result = EventRepository().delete_by_id(3)
+result = EventRepository().delete_by_id(result_event.id)
 result = EventRepository().get_list_items_by_filter()
 print(result)
