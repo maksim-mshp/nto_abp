@@ -4,6 +4,10 @@ from sqlalchemy import inspect
 
 from repositories.event import EventRepository
 from repositories.event_type import EventTypeRepository
+import os
+from core.config import config
+
+CATEGORIES = ['Развлечения', 'Просвещение', 'Образование']
 
 
 def object_as_dict(obj):
@@ -14,6 +18,8 @@ def object_as_dict(obj):
 
 
 def add_sample_data():
+    if os.path.exists(config.PROJECT_ROOT + '/' + config.DATABASE_NAME):
+        return
     # -------- Виды мероприятий ----------
     events_type = ['Cпектакль', 'Концерт', 'Репетиция', 'Выставка', 'Мастер-класс']
     for event_type in events_type:
@@ -35,3 +41,8 @@ def add_sample_data():
     ]
     for event in events:
         EventRepository().create(**event)
+
+
+def get_types():
+    result = EventTypeRepository().get_list_items_by_filter()
+    return [object_as_dict(i) for i in result]
