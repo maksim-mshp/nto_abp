@@ -83,14 +83,11 @@ def get_type_id_by_name(name: str) -> int:
     return object_as_dict(data)['id']
 
 
-def get_events(category=None):
-    if category is None:
-        result = EventRepository().get_list_items_by_filter()
-    else:
-        filt = {
-            'category': category
-        }
-        result = EventRepository().get_list_items_by_filter(**filt)
+def get_events(category):
+    filt = {
+        'category': category
+    }
+    result = EventRepository().get_list_items_by_filter(**filt)
     return [object_as_dict(i) for i in result]
 
 
