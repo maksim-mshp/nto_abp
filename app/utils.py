@@ -4,14 +4,8 @@ from datetime import datetime
 
 from sqlalchemy import inspect
 
-from core.config import config
-from core.database import create_database
-
 from repositories.event import EventRepository
 from repositories.event_type import EventTypeRepository
-from repositories.job import JobRepository
-from repositories.job_type import JobTypeRepository
-from repositories.job_room import JobRoomRepository
 
 CATEGORIES = ['Развлечения', 'Просвещение', 'Образование']
 

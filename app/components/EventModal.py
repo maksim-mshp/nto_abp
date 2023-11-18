@@ -1,7 +1,6 @@
 import datetime
 import flet as ft
-from app import utils
-
+import utils
 
 class EventModal:
 

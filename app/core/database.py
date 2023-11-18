@@ -34,7 +34,7 @@ def drop_database():
 
 
 def add_sample_data():
-    if os.path.exists('../sqlite.db'):
+    if os.path.exists(config.PROJECT_ROOT + '/' + config.DATABASE_NAME):
         create_database()
         return
     create_database()

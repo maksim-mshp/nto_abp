@@ -1,9 +1,14 @@
 import flet as ft
 from utils import *
 from components.MainView import MainView
+from core.database import add_sample_data
+from tendo import singleton
+from sys import exit
 
-from core.database import engine
-from core.database import Base
+try:
+    me = singleton.SingleInstance()
+except singleton.SingleInstanceException:
+    exit(-1)
 
 
 def main(page: ft.Page):
