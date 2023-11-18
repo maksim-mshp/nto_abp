@@ -16,4 +16,4 @@ class Event(Base):
     date: Mapped[datetime]
     category: Mapped[str]
     event_type_id: Mapped[int] = mapped_column(ForeignKey("events_type.id"))
-    event_type: Mapped["EventType"] = relationship("EventType")
+    event_type: Mapped["EventType"] = relationship("EventType", lazy="joined")
