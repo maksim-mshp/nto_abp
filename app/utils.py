@@ -1,11 +1,12 @@
+import os
 from datetime import datetime
 
 from sqlalchemy import inspect
 
+from core.database import create_database
+
 from repositories.event import EventRepository
 from repositories.event_type import EventTypeRepository
-import os
-from core.config import config
 
 CATEGORIES = ['Развлечения', 'Просвещение', 'Образование']
 
@@ -18,8 +19,11 @@ def object_as_dict(obj):
 
 
 def add_sample_data():
-    if EventTypeRepository().get_list_items_by_filter():
+    if os.path.exists('../sqlite.db'):
+        create_database()
         return
+    create_database()
+
     # -------- Виды мероприятий ----------
     events_type = ['Cпектакль', 'Концерт', 'Репетиция', 'Выставка', 'Мастер-класс']
     for event_type in events_type:
@@ -27,13 +31,15 @@ def add_sample_data():
     # -------- Мероприятия ----------
     events = [
         {
-            'description': 'Выставка «Архитектура и мода. В потоке времени»',
+            'title': 'Выставка «Архитектура и мода. В потоке времени»',
+            'description': 'Очень круто событие приходите!!!',
             'date': datetime(2023, 11, 18),
             'category': CATEGORIES[1],
             'event_type_id': 4
         },
         {
-            'description': 'Мастер-классы по эстрадному вокалу «Мне нужно петь» в ноябре',
+            'title': 'Мастер-классы по эстрадному вокалу «Мне нужно петь» в ноябре',
+            'description': 'Очень круто событие приходите!!!',
             'date': datetime(2023, 11, 25),
             'category': CATEGORIES[2],
             'event_type_id': 5

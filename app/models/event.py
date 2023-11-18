@@ -11,6 +11,7 @@ class Event(Base):
     __tablename__ = 'events'
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str]
     description: Mapped[str]
     date: Mapped[datetime]
     category: Mapped[str]
