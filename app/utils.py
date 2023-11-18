@@ -52,7 +52,7 @@ def add_sample_data():
 
 def get_types() -> list:
     data = EventTypeRepository().get_list_items_by_filter()
-    return [object_as_dict(i)['id'] for i in data]
+    return [object_as_dict(i)['name'] for i in data]
 
 
 def get_formatted_date(date: datetime) -> str:
@@ -65,6 +65,14 @@ def get_type_by_id(id: int) -> str:
     }
     data = EventTypeRepository().get_list_items_by_filter(**filt)[0]
     return object_as_dict(data)['name']
+
+
+def get_event_by_id(id: int) -> dict:
+    filt = {
+        'id': id
+    }
+    data = EventRepository().get_list_items_by_filter(**filt)[0]
+    return object_as_dict(data)
 
 
 def get_type_id_by_name(name: str) -> int:
@@ -99,4 +107,4 @@ def create_event(name: str, date: datetime, event_type: str, description: str, c
 
 
 if __name__ == '__main__':
-    print(get_type_id_by_name('Cпектакль'))
+    print(get_event_by_id(1))

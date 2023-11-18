@@ -4,12 +4,13 @@ import flet as ft
 from app import utils
 
 
-class CreateEvent:
+class EventModal:
 
-    def __init__(self, page: ft.Page, close_event, categoty):
+    def __init__(self, page: ft.Page, close_event, categoty=None, id=None):
         self.page = page
         self.close_event = close_event
         self.categoty = categoty
+        self.id = id
 
         self.type = ft.Dropdown(
             options=[ft.dropdown.Option(i) for i in utils.get_types()],
@@ -56,8 +57,11 @@ class CreateEvent:
             ft.Container(expand=1, content=self.description),
         ], height=400, width=500, spacing=17)
 
+        self._reset()
+        self.date_btn.text = self._get_btn_text()
+
         self.dialog = ft.AlertDialog(
-            title=ft.Text("Создание мероприятия"),
+            title=ft.Text("Создание мероприятия" if self.id is None else 'Редактирование мероприятия'),
             content=self.form,
             actions=[
                 ft.TextButton("Отмена", on_click=self._cancel),
@@ -67,16 +71,28 @@ class CreateEvent:
             modal=True
         )
 
-    def close(self):
-        self.dialog.open = False
-        self.close_event()
-        self.name.value = ''
-        self.type.value = None
-        self.date.value = None
-        self.description.value = ''
+    def _reset(self):
         self.name.error_text = None
         self.type.error_text = None
         self.date_btn.style = self.normal_btn_style
+
+        if self.id is None:
+            self.name.value = ''
+            self.type.value = None
+            self.date.value = None
+            self.description.value = ''
+            return
+
+        event = utils.get_event_by_id(self.id)
+        self.name.value = event['title']
+        self.type.value = utils.get_type_by_id(event['event_type_id'])
+        self.date.value = event['date']
+        self.description.value = event['description']
+
+    def close(self):
+        self.dialog.open = False
+        self.close_event()
+        self._reset()
 
     def open(self):
         self.dialog.open = True
