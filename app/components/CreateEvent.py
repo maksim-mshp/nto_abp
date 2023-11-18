@@ -11,7 +11,7 @@ class CreateEvent:
         self.close_event = close_event
 
         self.type = ft.Dropdown(
-            options=[ft.dropdown.Option(i) for i in utils.get_types()],
+            options=[ft.dropdown.Option(i['name']) for i in utils.get_types()],
             label='Вид мероприятия'
         )
 
