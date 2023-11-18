@@ -15,15 +15,15 @@ class EventModal:
         self.type = ft.Dropdown(
             options=[ft.dropdown.Option(i) for i in utils.get_types()],
             label='Вид мероприятия',
-            on_change=self._on_type_change
+            on_change=self.on_type_change
         )
 
-        self.name = ft.TextField(label="Название", on_change=self._on_name_change)
+        self.name = ft.TextField(label="Название", on_change=self.on_name_change)
         self.description = ft.TextField(label="Описание", multiline=True)
 
         self.date = ft.DatePicker(
-            on_dismiss=self._on_close_datepicker,
-            on_change=self._on_close_datepicker,
+            on_dismiss=self.on_close_datepicker,
+            on_change=self.on_close_datepicker,
             first_date=datetime.datetime.now(),
             date_picker_entry_mode=ft.DatePickerEntryMode.CALENDAR_ONLY,
         )
@@ -47,7 +47,7 @@ class EventModal:
             padding=17
         )
 
-        self.date_btn = ft.ElevatedButton(self._get_btn_text(), on_click=self._open_datepicker,
+        self.date_btn = ft.ElevatedButton(self.get_btn_text(), on_click=self.open_datepicker,
                                           icon=ft.icons.EDIT_CALENDAR, style=self.normal_btn_style)
 
         self.form = ft.Column(controls=[
@@ -57,21 +57,16 @@ class EventModal:
             ft.Container(expand=1, content=self.description),
         ], height=400, width=500, spacing=17)
 
-        self._reset()
-        self.date_btn.text = self._get_btn_text()
-
-        text_btn_style = ft.ButtonStyle(
-            shape=ft.RoundedRectangleBorder(radius=10),
-            padding=15
-        )
+        self.reset()
+        self.date_btn.text = self.get_btn_text()
 
         self.dialog = ft.AlertDialog(
             title=ft.Text("Создание мероприятия" if self.id is None else 'Редактирование мероприятия'),
             content=self.form,
             actions=[
                 ft.Row([
-                    ft.TextButton("Отмена", on_click=self._cancel, style=text_btn_style),
-                    ft.TextButton("Сохранить", on_click=self._save, style=text_btn_style),
+                    ft.TextButton("Отмена", on_click=self.cancel, style=utils.DEFAULT_BTN_STYLE),
+                    ft.TextButton("Сохранить", on_click=self.save, style=utils.DEFAULT_BTN_STYLE),
                 ], tight=True)
             ],
             actions_alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -82,7 +77,7 @@ class EventModal:
             self.dialog.actions_alignment = ft.MainAxisAlignment.END
             return
 
-        self.dialog.actions.insert(0, ft.TextButton("Удалить мероприятие", on_click=self._remove, style=ft.ButtonStyle(
+        self.dialog.actions.insert(0, ft.TextButton("Удалить мероприятие", on_click=self.remove, style=ft.ButtonStyle(
             color=ft.colors.RED_ACCENT_700,
             bgcolor={
                 ft.MaterialState.HOVERED: ft.colors.RED_100,
@@ -91,7 +86,7 @@ class EventModal:
             padding=15
         )))
 
-    def _reset(self):
+    def reset(self):
         self.name.error_text = None
         self.type.error_text = None
         self.date_btn.style = self.normal_btn_style
@@ -113,45 +108,45 @@ class EventModal:
     def close(self):
         self.dialog.open = False
         self.close_event()
-        self._reset()
+        self.reset()
 
     def open(self):
         self.dialog.open = True
 
-    def _get_btn_text(self):
+    def get_btn_text(self):
         if self.date.value is not None:
             return utils.get_formatted_date(self.date.value)
         return 'Выберите дату'
 
-    def _cancel(self, e):
+    def cancel(self, e):
         self.close()
 
-    def _remove(self, e):
+    def remove(self, e):
         utils.EventRepository().delete_by_id(self.id)
         self.id = None
         self.close()
 
-    def _open_datepicker(self, e):
+    def open_datepicker(self, e):
         self.date.pick_date()
 
-    def _on_close_datepicker(self, e):
+    def on_close_datepicker(self, e):
         if self.date.value is not None:
             self.date_btn.style = self.normal_btn_style
 
-        self.date_btn.text = self._get_btn_text()
+        self.date_btn.text = self.get_btn_text()
         self.dialog.update()
 
-    def _on_name_change(self, e):
+    def on_name_change(self, e):
         if self.name.value.strip() != '':
             self.name.error_text = None
             self.dialog.update()
 
-    def _on_type_change(self, e):
+    def on_type_change(self, e):
         if self.type.value is not None:
             self.type.error_text = None
             self.dialog.update()
 
-    def _save(self, e):
+    def save(self, e):
         err = False
 
         if self.name.value.strip() == '':
@@ -170,9 +165,10 @@ class EventModal:
             return
 
         if self.id is None:
-            utils.create_event(self.name.value, self.date.value, self.type.value, self.description.value, self.category)
+            utils.create_event(self.name.value.strip(), self.date.value, self.type.value,
+                               self.description.value.strip(), self.category)
         else:
-            utils.update_event(self.id, self.name.value, self.date.value, self.type.value, self.description.value,
-                               self.category)
+            utils.update_event(self.id, self.name.value.strip(), self.date.value, self.type.value,
+                               self.description.value.strip(), self.category)
 
         self.close()

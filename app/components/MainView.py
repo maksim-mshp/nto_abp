@@ -1,5 +1,6 @@
 import flet as ft
 from app.components.EventModal import EventModal
+from app.components.TypesModal import TypesModal
 from app.utils import *
 
 
@@ -32,7 +33,7 @@ class MainView:
             [self.tabs, ft.ElevatedButton('Управление видами мероприятий', style=ft.ButtonStyle(
                 shape=ft.RoundedRectangleBorder(radius=10),
                 padding=17
-            ))],
+            ), on_click=self.manage_types_clicked)],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         ))
         self.on_change()
@@ -45,13 +46,19 @@ class MainView:
         self.modal.open()
         self.page.update()
 
+    def manage_types_clicked(self, e):
+        self.modal = TypesModal(self.page, close_event=self.on_change)
+        self.page.dialog = self.modal.dialog
+        self.modal.open()
+        self.page.update()
+
     def open_modal(self, e):
         self.modal = EventModal(self.page, close_event=self.on_change, id=e.control.data)
         self.page.dialog = self.modal.dialog
         self.modal.open()
         self.page.update()
 
-    def _safe_remove(self, obj):
+    def safe_remove(self, obj):
         try:
             self.page.remove(obj)
         except ValueError:
@@ -76,12 +83,12 @@ class MainView:
                 ) for event in events
             ]
 
-            self._safe_remove(self.nothing)
-            self._safe_remove(self.dt)
+            self.safe_remove(self.nothing)
+            self.safe_remove(self.dt)
             self.page.add(self.dt)
         else:
-            self._safe_remove(self.nothing)
-            self._safe_remove(self.dt)
+            self.safe_remove(self.nothing)
+            self.safe_remove(self.dt)
             self.page.add(self.nothing)
 
         self.page.update()

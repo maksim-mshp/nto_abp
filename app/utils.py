@@ -1,15 +1,18 @@
 import os
+import flet as ft
 from datetime import datetime
-
 from sqlalchemy import inspect
-
 from core.database import create_database
-
 from repositories.event import EventRepository
 from repositories.event_type import EventTypeRepository
 from core.config import config
 
 CATEGORIES = ['Развлечения', 'Просвещение', 'Образование']
+
+DEFAULT_BTN_STYLE = ft.ButtonStyle(
+    shape=ft.RoundedRectangleBorder(radius=10),
+    padding=15
+)
 
 
 def object_as_dict(obj):
@@ -102,6 +105,7 @@ def create_event(name: str, date: datetime, event_type: str, description: str, c
 
     EventRepository().create(**event)
 
+
 def update_event(id: int, name: str, date: datetime, event_type: str, description: str, category: str):
     event = {
         'title': name.strip(),
@@ -112,6 +116,10 @@ def update_event(id: int, name: str, date: datetime, event_type: str, descriptio
     }
 
     EventRepository().update_by_id(id, **event)
+
+
+def is_type_using(id: int) -> bool:
+    return EventRepository().get_list_items_by_filter(event_type_id=id) != []
 
 
 if __name__ == '__main__':
