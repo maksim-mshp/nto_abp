@@ -18,7 +18,7 @@ def object_as_dict(obj):
 
 
 def add_sample_data():
-    if os.path.exists(config.PROJECT_ROOT + '/' + config.DATABASE_NAME):
+    if EventTypeRepository().get_list_items_by_filter():
         return
     # -------- Виды мероприятий ----------
     events_type = ['Cпектакль', 'Концерт', 'Репетиция', 'Выставка', 'Мастер-класс']
