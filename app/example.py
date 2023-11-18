@@ -27,6 +27,7 @@ result_event_type = EventTypeRepository().create(**sample_type)
 print(result_event_type.id)
 print(object_as_dict(result_event_type))
 sample_event = {
+    'title': 'Название',
     'description': 'описание',
     'date': datetime.now(),
     'category': 'просвещение',
