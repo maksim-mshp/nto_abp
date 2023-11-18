@@ -5,7 +5,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database import Base
 from models.event_type import EventType
-from models.event_category import EventCategory
 
 
 class Event(Base):
@@ -14,6 +13,6 @@ class Event(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     description: Mapped[str]
     date: Mapped[datetime]
-    category: Mapped[EventCategory]
+    category: Mapped[str]
     event_type_id: Mapped[int] = mapped_column(ForeignKey("events_type.id"))
     event_type: Mapped["EventType"] = relationship("EventType")
