@@ -3,7 +3,8 @@ from datetime import datetime
 from repositories.event_type import EventTypeRepository
 from repositories.event import EventRepository
 
-from utils import object_as_dict, add_sample_data
+from utils import object_as_dict
+from core.database import add_sample_data
 
 add_sample_data()
 
