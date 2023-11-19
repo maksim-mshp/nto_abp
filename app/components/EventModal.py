@@ -94,14 +94,13 @@ class EventModal:
             self.type.value = None
             self.date.value = None
             self.description.value = ''
-            return
-
-        event = utils.get_event_by_id(self.id)
-        self.category = event['category']
-        self.name.value = event['title']
-        self.type.value = utils.get_type_by_id(event['event_type_id'])
-        self.date.value = event['date']
-        self.description.value = event['description']
+        else:
+            event = utils.get_event_by_id(self.id)
+            self.category = event['category']
+            self.name.value = event['title']
+            self.type.value = utils.get_type_by_id(event['event_type_id'])
+            self.date.value = event['date']
+            self.description.value = event['description']
 
         if self.category == utils.CATEGORIES[2]:
             self.type.visible = False

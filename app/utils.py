@@ -24,7 +24,9 @@ def object_as_dict(obj):
 
 def get_types() -> list:
     data = EventTypeRepository().get_list_items_by_filter()
-    return [object_as_dict(i)['name'] for i in data]
+    data = [object_as_dict(i)['name'] for i in data]
+    data.sort()
+    return data
 
 
 def get_formatted_date(date: datetime) -> str:
