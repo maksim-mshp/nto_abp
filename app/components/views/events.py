@@ -1,6 +1,9 @@
+import flet as ft
 from components.modals.event import EventModal
 from components.modals.event_type import TypeModal
-from utils import *
+
+from services.event import event_service
+from utils import CATEGORIES, get_formatted_date
 
 
 class Events:
@@ -85,7 +88,7 @@ class Events:
 
     def on_change(self, e=None):
         category = CATEGORIES[self.tabs.selected_index]
-        events = get_events(category)
+        events = event_service.get_events(category)
         self.safe_remove(self.dt)
         self.dt = ft.Column([ft.DataTable(
             columns=[
@@ -109,7 +112,7 @@ class Events:
                     if self.tabs.selected_index == 2 else
                     [
                         ft.DataCell(ft.Text(event['title'])),
-                        ft.DataCell(ft.Text(get_type_by_id(event['event_type_id']))),
+                        ft.DataCell(ft.Text(event_service.get_event_type_by_id(event['event_type_id']))),
                         ft.DataCell(ft.Text(get_formatted_date(event['date']))),
                     ],
                     on_select_changed=self.open_modal,

@@ -1,6 +1,7 @@
 import flet as ft
 import utils
-from repositories.event_type import EventTypeRepository
+
+from services.event import event_service
 
 
 class EventType:
@@ -17,7 +18,7 @@ class EventType:
             on_click=self.delete,
         )
 
-        if (self.id is not None) and utils.is_type_using(self.id):
+        if (self.id is not None) and event_service.is_event_type_using(self.id):
             del_btn.disabled = True
             del_btn.tooltip = 'Невозможно удалить, т.к. этот вид используется'
 
@@ -87,14 +88,13 @@ class EventType:
         self.toggle_editing()
 
         if self.id is None:
-            self.id = utils.object_as_dict(EventTypeRepository().create(name=self.text))['id']
+            self.id = event_service.create_event_type(name=self.text)['id']
             self.component.data = self.id
             return
-
-        EventTypeRepository().update_by_id(self.id, name=self.text)
+        event_service.update_event_type(self.id, name=self.text)
 
     def delete(self, e):
-        EventTypeRepository().delete_by_id(self.id)
+        event_service.delete_event_type(self.id)
         self.on_delete(self.id)
 
 
@@ -104,8 +104,7 @@ class TypeModal:
         self.close_event = close_event
 
         self.form = ft.Column(controls=[], height=400, width=500)
-        for i in EventTypeRepository().get_list_items_by_filter():
-            i = utils.object_as_dict(i)
+        for i in event_service.get_events_types_with_id():
             self.form.controls.append(EventType(self.on_type_delete, i['name'], i['id']).component)
 
         self.dialog = ft.AlertDialog(
