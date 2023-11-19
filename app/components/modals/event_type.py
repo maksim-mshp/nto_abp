@@ -98,7 +98,7 @@ class EventType:
         self.on_delete(self.id)
 
 
-class TypesModal:
+class TypeModal:
     def __init__(self, page: ft.Page, close_event):
         self.page = page
         self.close_event = close_event

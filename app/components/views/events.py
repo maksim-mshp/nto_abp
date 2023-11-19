@@ -1,16 +1,17 @@
-import flet as ft
-from components.EventModal import EventModal
-from components.TypesModal import TypesModal
+from components.modals.event import EventModal
+from components.modals.event_type import TypeModal
 from utils import *
 
 
-class MainView:
+class Events:
+    VIEW_TITLE: str = "Мероприятия"
+    VIEW_ICON = ft.icons.EVENT_ROUNDED
+
     def __init__(self, page: ft.Page):
         self.page = page
         self.modal = None
-
         self.dt = None
-
+        self.component = ft.Column(controls=[], expand=1)
         self.nothing = ft.Container(ft.Text("Ничего не найдено"), width=100000, padding=50,
                                     alignment=ft.alignment.center)
 
@@ -22,7 +23,7 @@ class MainView:
 
         self.create_btn = ft.FloatingActionButton(icon=ft.icons.ADD, on_click=self.add_clicked)
         self.page.add(self.create_btn)
-        page.add(ft.Row(
+        self.component.controls.append(ft.Row(
             [self.tabs, ft.ElevatedButton('Управление видами мероприятий', style=ft.ButtonStyle(
                 shape=ft.RoundedRectangleBorder(radius=10),
                 padding=17
@@ -30,6 +31,28 @@ class MainView:
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         ))
         self.on_change()
+        self.hide()
+
+    def show(self):
+        self.component.visible = True
+        self.create_btn.visible = True
+        self.page.title = self.VIEW_TITLE
+        self.safe_update()
+        self.page.update()
+
+    def hide(self):
+        self.component.visible = False
+        self.create_btn.visible = False
+        self.modal = None
+        self.page.dialog = None
+        self.safe_update()
+        self.page.update()
+
+    def safe_update(self):
+        try:
+            self.component.update()
+        except AssertionError:
+            pass
 
     def add_clicked(self, e):
         self.modal = EventModal(self.page,
@@ -37,23 +60,26 @@ class MainView:
                                 category=CATEGORIES[self.tabs.selected_index])
         self.page.dialog = self.modal.dialog
         self.modal.open()
+        self.safe_update()
         self.page.update()
 
     def manage_types_clicked(self, e):
-        self.modal = TypesModal(self.page, close_event=self.on_change)
+        self.modal = TypeModal(self.page, close_event=self.on_change)
         self.page.dialog = self.modal.dialog
         self.modal.open()
+        self.safe_update()
         self.page.update()
 
     def open_modal(self, e):
         self.modal = EventModal(self.page, close_event=self.on_change, id=e.control.data)
         self.page.dialog = self.modal.dialog
         self.modal.open()
+        self.safe_update()
         self.page.update()
 
     def safe_remove(self, obj):
         try:
-            self.page.remove(obj)
+            self.component.controls.remove(obj)
         except ValueError:
             pass
 
@@ -92,9 +118,10 @@ class MainView:
             ]
 
             self.safe_remove(self.nothing)
-            self.page.add(self.dt)
+            self.component.controls.append(self.dt)
         else:
             self.safe_remove(self.nothing)
-            self.page.add(self.nothing)
+            self.component.controls.append(self.nothing)
 
+        self.safe_update()
         self.page.update()
