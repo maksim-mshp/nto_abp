@@ -6,6 +6,8 @@ from sqlalchemy import inspect
 
 CATEGORIES = ['Развлечения', 'Просвещение', 'Образование']
 
+JOB_STATUSES = ['Черновик', 'К работе', 'Выполнено']
+
 DEFAULT_BTN_STYLE = ft.ButtonStyle(
     shape=ft.RoundedRectangleBorder(radius=10),
     padding=15
