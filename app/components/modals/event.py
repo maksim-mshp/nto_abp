@@ -16,11 +16,11 @@ class EventModal:
         self.type = ft.Dropdown(
             options=[ft.dropdown.Option(i) for i in event_service.get_events_types()],
             label='Вид мероприятия',
-            on_change=self.on_type_change
+            on_change=self.on_type_change, dense=True
         )
 
-        self.name = ft.TextField(label="Название", on_change=self.on_name_change)
-        self.description = ft.TextField(label="Описание", multiline=True)
+        self.name = ft.TextField(label="Название", on_change=self.on_name_change, dense=True)
+        self.description = ft.TextField(label="Описание", multiline=True, dense=True)
 
         self.date = ft.DatePicker(
             on_dismiss=self.on_close_datepicker,
@@ -56,7 +56,7 @@ class EventModal:
             self.type,
             self.date_btn,
             ft.Container(expand=1, content=self.description),
-        ], height=400, width=500, spacing=17)
+        ], height=530, width=615, spacing=17)
 
         self.reset()
         self.date_btn.text = self.get_btn_text()

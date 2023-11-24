@@ -19,6 +19,8 @@ from models.job_type import JobType
 from models.job_room import JobRoom
 from models.job import Job
 
+from utils import CATEGORIES, JOB_STATUSES
+
 
 def get_session():
     with session_maker() as session:
@@ -47,13 +49,13 @@ def add_sample_data():
             EventType(name='Выставка'),
             EventType(name='Мастер-класс'),
             Event(title='Выставка «Архитектура и мода. В потоке времени»',
-                  description='Очень круто событие приходите!!!', date=datetime(2023, 11, 18), category='Просвещение',
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 11, 18), category=CATEGORIES[1],
                   event_type_id=4),
             Event(title='Мастер-классы по эстрадному вокалу «Мне нужно петь» в ноябре',
-                  description='Очень круто событие приходите!!!', date=datetime(2023, 11, 25), category='Образование',
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 11, 25), category=CATEGORIES[2],
                   event_type_id=5),
             Event(title='Спектакль-концерт в рамках проекта «П» в кубе: «Неделя просвещения»',
-                  description='Очень круто событие приходите!!!', date=datetime(2023, 11, 19), category='Просвещение',
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 11, 19), category=CATEGORIES[1],
                   event_type_id=5),
             JobType(name='Уборка'),
             JobType(name='Установка экспонатов'),
@@ -64,17 +66,19 @@ def add_sample_data():
             JobRoom(name='Театральная сцена'),
             JobRoom(name='Звукозаписывающая студия'),
             Job(title='Подготовка и установка экспонатов в выставочном зале', description='', event_id=1, job_type_id=2,
-                job_room_id=2, registration_date=datetime.now(), deadline=datetime(2023, 11, 25), status='Черновик'),
+                job_room_id=2, registration_date=datetime.now(), deadline=datetime(2023, 11, 25),
+                status=JOB_STATUSES[0]),
             Job(title='Настройка освещения в концертном зале', description='', event_id=3, job_type_id=4, job_room_id=1,
-                registration_date=datetime.now(), deadline=datetime(2023, 11, 25), status='Черновик'),
+                registration_date=datetime.now(), deadline=datetime(2023, 11, 25), status=JOB_STATUSES[0]),
             Job(title='Настройка освещения в выставочном зале', description='', event_id=1, job_type_id=4,
-                job_room_id=2, registration_date=datetime.now(), deadline=datetime(2023, 11, 25), status='К работе'),
+                job_room_id=2, registration_date=datetime.now(), deadline=datetime(2023, 11, 25),
+                status=JOB_STATUSES[1]),
             Job(title='Настройка звукозаписывающего оборудования в концертном зале', description='', event_id=3,
                 job_type_id=3, job_room_id=1, registration_date=datetime.now(), deadline=datetime(2023, 11, 25),
-                status='К работе'),
+                status=JOB_STATUSES[1]),
             Job(title='Уборка выставочного зала', description='', event_id=1, job_type_id=1, job_room_id=2,
-                registration_date=datetime.now(), deadline=datetime(2023, 11, 25), status='Выполнено'),
+                registration_date=datetime.now(), deadline=datetime(2023, 11, 25), status=JOB_STATUSES[2]),
             Job(title='Уборка концертного зала', description='', event_id=3, job_type_id=1, job_room_id=1,
-                registration_date=datetime.now(), deadline=datetime(2023, 11, 25), status='Выполнено')
+                registration_date=datetime.now(), deadline=datetime(2023, 11, 25), status=JOB_STATUSES[2])
         ])
         session.commit()

@@ -15,7 +15,8 @@ except singleton.SingleInstanceException:
 def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
     page.window_min_width = 850
-    page.window_min_height = 700
+    page.window_min_height = 770
+    page.window_maximized = True
     add_sample_data()
 
     page_index = 1

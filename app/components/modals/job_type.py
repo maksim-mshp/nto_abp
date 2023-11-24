@@ -42,7 +42,7 @@ class JobType:
             ],
         )
 
-        self.input = ft.TextField(expand=1, value=self.text, on_focus=self.on_focus_input)
+        self.input = ft.TextField(expand=1, value=self.text, on_focus=self.on_focus_input, dense=True)
 
         self.edit_view = ft.Row(
             visible=self.is_editing,

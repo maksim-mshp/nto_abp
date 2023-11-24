@@ -4,6 +4,8 @@ import flet as ft
 from services.event import event_service
 from services.job import job_service
 import utils
+from utils import JOB_STATUSES
+from components.job_status_chip import JobStatusChip
 
 
 class JobModal:
@@ -15,25 +17,36 @@ class JobModal:
         self.id = id
 
         self.event = ft.Dropdown(
-            options=[ft.dropdown.Option(i['title']) for i in event_service.get_events()],
+            options=[ft.dropdown.Option(i['id'], i['title']) for i in event_service.get_events()],
             label='Мероприятие',
             on_change=self.on_event_change,
+            dense=True
         )
 
         self.job_type = ft.Dropdown(
-            options=[ft.dropdown.Option(i) for i in job_service.get_jobs_types()],
+            options=[ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_types_with_id()],
             label='Вид работы',
             on_change=self.on_job_type_change,
+            dense=True
         )
 
         self.room = ft.Dropdown(
-            options=[ft.dropdown.Option(i) for i in job_service.get_jobs_rooms()],
+            options=[ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_rooms_with_id()],
             label='Помещение',
             on_change=self.on_room_change,
+            dense=True
         )
 
-        self.name = ft.TextField(label="Название", on_change=self.on_name_change)
-        self.description = ft.TextField(label="Описание", multiline=True)
+        self.status = ft.Dropdown(
+            options=[ft.dropdown.Option(i) for i in JOB_STATUSES],
+            label='Статус',
+            on_change=self.on_status_change,
+            value=JOB_STATUSES[0],
+            dense=True
+        )
+
+        self.name = ft.TextField(label="Название", on_change=self.on_name_change, dense=True)
+        self.description = ft.TextField(label="Описание", multiline=True, dense=True)
 
         self.date = ft.DatePicker(
             on_dismiss=self.on_close_datepicker,
@@ -66,12 +79,13 @@ class JobModal:
 
         self.form = ft.Column(controls=[
             self.name,
+            self.status,
             self.event,
             self.job_type,
             self.room,
             self.date_btn,
             ft.Container(expand=1, content=self.description),
-        ], height=500, width=500, spacing=17)
+        ], width=615, spacing=17, height=530)
 
         self.reset()
         self.date_btn.text = self.get_btn_text()
@@ -105,23 +119,25 @@ class JobModal:
     def reset(self):
         self.name.error_text = None
         self.event.error_text = None
+        self.job_type.error_text = None
+        self.room.error_text = None
+        self.status.error_text = None
         self.date_btn.style = self.normal_btn_style
 
         if self.id is None:
             self.name.value = ''
             self.event.value = None
+            self.job_type.value = None
+            self.room.value = None
+            self.status.value = JOB_STATUSES[0]
             self.date.value = None
             self.description.value = ''
         else:
             event = event_service.get_event_by_id(self.id)
-            self.category = event['category']
             self.name.value = event['title']
             self.event.value = event_service.get_event_type_by_id(event['event_type_id'])
             self.date.value = event['date']
             self.description.value = event['description']
-
-        if self.category == utils.CATEGORIES[2]:
-            self.event.visible = False
 
     def close(self):
         self.dialog.open = False
@@ -174,14 +190,28 @@ class JobModal:
             self.job_type.error_text = None
             self.dialog.update()
 
+    def on_status_change(self, e):
+        if self.job_type.value is not None:
+            self.job_type.error_text = None
+            self.dialog.update()
+
     def save(self, e):
         err = False
 
         if self.name.value.strip() == '':
             self.name.error_text = 'Введите название'
             err = True
-        if (self.event.value is None) and self.category != utils.CATEGORIES[2]:
-            self.event.error_text = 'Выберите вид'
+        if self.event.value is None:
+            self.event.error_text = 'Выберите мероприятие'
+            err = True
+        if self.job_type.value is None:
+            self.job_type.error_text = 'Выберите вид работы'
+            err = True
+        if self.room.value is None:
+            self.room.error_text = 'Выберите помещение'
+            err = True
+        if self.status.value is None:
+            self.status.error_text = 'Выберите статус'
             err = True
 
         if self.date.value is None:
@@ -193,8 +223,15 @@ class JobModal:
             return
 
         if self.id is None:
-            event_service.create_event(self.name.value.strip(), self.date.value, self.event.value,
-                                       self.description.value.strip(), self.category)
+            job_service.create_job(
+                self.name.value.strip(),
+                self.description.value.strip(),
+                self.event.value,
+                self.job_type.value,
+                self.room.value,
+                self.date.value,
+                self.status.value
+            )
         else:
             event_service.update_event(self.id, self.name.value.strip(), self.date.value, self.event.value,
                                        self.description.value.strip(), self.category)

@@ -3,10 +3,9 @@ from datetime import datetime
 
 from sqlalchemy import inspect
 
-
 CATEGORIES = ['Развлечения', 'Просвещение', 'Образование']
 
-JOB_STATUSES = ['Черновик', 'К работе', 'Выполнено']
+JOB_STATUSES = ['Создана', 'К выполнению', 'Выполнена']
 
 DEFAULT_BTN_STYLE = ft.ButtonStyle(
     shape=ft.RoundedRectangleBorder(radius=10),
@@ -24,3 +23,8 @@ def object_as_dict(obj):
 def get_formatted_date(date: datetime) -> str:
     return date.strftime('%d.%m.%Y')
 
+
+def truncate_text(s: str, max_length: int = 50) -> str:
+    if len(str) <= max_length:
+        return s
+    return s[:max_length] + '...'

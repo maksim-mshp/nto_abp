@@ -69,8 +69,10 @@ class JobService:
         return object_as_dict(job_type)
 
     def get_job_type_by_id(self, room_id: int) -> dict:
-        job_type = self.job_type_repository.get_item_by_filter(id=room_id)
-        return object_as_dict(job_type)
+        if room_id is None:
+            return None
+        data = self.job_type_repository.get_item_by_filter(id=room_id)
+        return object_as_dict(data)['name']
 
     def get_jobs_types(self) -> list[str]:
         data = self.job_type_repository.get_list_items_by_filter()
