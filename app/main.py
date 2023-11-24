@@ -1,6 +1,6 @@
 from utils import *
 from components.views.events import Events
-from components.views.tasks import Tasks
+from components.views.jobs import Jobs
 from components.navbar import NavigationBar
 from core.database import add_sample_data
 from tendo import singleton
@@ -21,7 +21,7 @@ def main(page: ft.Page):
     page_index = 0
     views = [
         Events(page),
-        Tasks(page)
+        Jobs(page)
     ]
 
     def on_page_change(e):
