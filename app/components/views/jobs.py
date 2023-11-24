@@ -45,9 +45,23 @@ class Jobs:
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         ))
 
+        self.filter_by = ft.Dropdown(
+            options=[ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_types_with_id()],
+            label='Фильтр',
+            on_change=self.on_change,
+            dense=True,
+        )
+
         self.dt = None
+        self.filter = ft.Row([
+            ft.Container(ft.Icon(ft.icons.FILTER_LIST), padding=ft.Padding(left=10, right=10, top=0, bottom=0)),
+            self.filter_by,
+            ft.IconButton(ft.icons.CLEAR, tooltip='Очистить фильтр', on_click=self.clear_filter)
+        ])
         self.nothing = ft.Container(ft.Text("Ничего не найдено"), width=100000, padding=50,
                                     alignment=ft.alignment.center)
+
+        self.component.controls.append(self.filter)
 
         self.hide()
         self.on_change()
@@ -57,6 +71,17 @@ class Jobs:
         self.create_btn.visible = True
         self.page.title = self.VIEW_TITLE
         self.safe_update()
+
+    def clear_filter(self, e):
+        self.filter_by = ft.Dropdown(
+            options=[ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_types_with_id()],
+            label='Фильтр',
+            on_change=self.on_change,
+            dense=True,
+        )
+        self.filter.controls[1] = self.filter_by
+        self.filter.update()
+        self.on_change()
 
     def add_clicked(self, e):
         self.modal = JobModal(self.page, close_event=self.on_change)
@@ -83,11 +108,17 @@ class Jobs:
             pass
 
     def on_change(self, e=None):
+        filt = {}
         if self.tabs.selected_index == 0:
-            jobs = job_service.get_jobs(status=JOB_STATUSES[1])
-        else:
-            jobs = job_service.get_jobs()
+            filt['status'] = JOB_STATUSES[1]
+        if self.filter_by.value is not None and self.filter_by.value != '':
+            filt['job_type_id'] = self.filter_by.value
+        print(filt)
+
+        jobs = job_service.get_jobs(**filt)
+
         self.safe_remove(self.dt)
+        self.safe_remove(self.nothing)
         self.dt = ft.Column([ft.DataTable(
             columns=[
                 ft.DataColumn(ft.Text("Название")),
@@ -112,10 +143,8 @@ class Jobs:
                 ) for job in jobs
             ]
 
-            self.safe_remove(self.nothing)
             self.component.controls.append(self.dt)
         else:
-            self.safe_remove(self.nothing)
             self.component.controls.append(self.nothing)
 
         self.safe_update()

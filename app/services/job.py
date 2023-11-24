@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from repositories.job import JobRepository
 from repositories.job_type import JobTypeRepository
@@ -68,7 +69,7 @@ class JobService:
         job_type = self.job_type_repository.get_item_by_filter(name=name)
         return object_as_dict(job_type)
 
-    def get_job_type_by_id(self, room_id: int) -> dict:
+    def get_job_type_by_id(self, room_id: int) -> dict | None:
         if room_id is None:
             return None
         data = self.job_type_repository.get_item_by_filter(id=room_id)
