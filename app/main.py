@@ -15,10 +15,10 @@ except singleton.SingleInstanceException:
 def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
     page.window_min_width = 850
-    page.window_min_height = 550
+    page.window_min_height = 700
     add_sample_data()
 
-    page_index = 0
+    page_index = 1
     views = [
         Events(page),
         Jobs(page)
@@ -32,7 +32,7 @@ def main(page: ft.Page):
         page_index = new_index
         page.update()
 
-    nav = NavigationBar(page, views, on_page_change)
+    nav = NavigationBar(page, views, on_page_change, page_index)
     views[page_index].show()
 
     page.add(ft.Row(

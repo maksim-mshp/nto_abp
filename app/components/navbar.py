@@ -2,13 +2,13 @@ import flet as ft
 
 
 class NavigationBar:
-    def __init__(self, page: ft.Page, views, on_page_change):
+    def __init__(self, page: ft.Page, views, on_page_change, selected_index):
         self.page = page
         self.on_page_change = on_page_change
         self.views = views
 
         self.nav = ft.NavigationRail(
-            selected_index=0,
+            selected_index=selected_index,
             label_type=ft.NavigationRailLabelType.ALL,
             group_alignment=-0.9,
             destinations=[

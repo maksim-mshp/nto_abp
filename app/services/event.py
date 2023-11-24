@@ -61,11 +61,14 @@ class EventService:
     def delete_event(self, event_id: int) -> None:
         self.event_repository.delete_by_id(event_id)
 
-    def get_events(self, category) -> list:
+    def get_events(self, category=None) -> list:
         filt = {
             'category': category
         }
-        result = self.event_repository.get_list_items_by_filter(**filt)
+        if category is None:
+            result = self.event_repository.get_list_items_by_filter()
+        else:
+            result = self.event_repository.get_list_items_by_filter(**filt)
         return [object_as_dict(i) for i in result]
 
     # ---------- EVENT TYPE ----------
