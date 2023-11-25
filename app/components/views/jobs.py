@@ -48,6 +48,8 @@ class Jobs:
         self.filter_by = self.create_dropdown()
 
         self.dt = None
+        self.sort_column_index = 1
+        self.sort_ascending = True
         self.filter = ft.Row([
             ft.Container(ft.Icon(ft.icons.FILTER_LIST, tooltip='Фильтр'),
                          padding=ft.Padding(left=10, right=10, top=0, bottom=0)),
@@ -113,6 +115,21 @@ class Jobs:
         self.safe_update()
         self.page.update()
 
+    def on_table_sort(self, e):
+        self.sort_column_index = e.column_index
+        self.sort_ascending = e.ascending
+        self.on_change()
+
+    def comp(self, x):
+        if self.sort_column_index == 0:
+            return x['title']
+        if self.sort_column_index == 1:
+            return x['deadline']
+        if self.sort_column_index == 2:
+            return JOB_STATUSES.index(x['status'])
+        job_types = job_service.get_jobs_types()
+        return job_types.index(job_service.get_job_type_by_id(x['job_type_id']))
+
     def on_change(self, e=None):
         filt = {}
         if self.tabs.selected_index == 0:
@@ -121,17 +138,20 @@ class Jobs:
             filt['job_type_id'] = self.filter_by.value
 
         jobs = job_service.get_jobs(**filt)
+        jobs.sort(key=self.comp, reverse=not self.sort_ascending)
 
         self.safe_remove(self.dt)
         self.safe_remove(self.nothing)
         self.dt = ft.Column([ft.DataTable(
             columns=[
-                ft.DataColumn(ft.Text("Название")),
-                ft.DataColumn(ft.Text("Дедлайн")),
-                ft.DataColumn(ft.Text("Статус")),
-                ft.DataColumn(ft.Text("Вид работы")),
+                ft.DataColumn(ft.Text("Название"), on_sort=self.on_table_sort),
+                ft.DataColumn(ft.Text("Дедлайн"), on_sort=self.on_table_sort),
+                ft.DataColumn(ft.Text("Статус"), on_sort=self.on_table_sort),
+                ft.DataColumn(ft.Text("Вид работы"), on_sort=self.on_table_sort),
             ],
             width=100000,
+            sort_column_index=self.sort_column_index,
+            sort_ascending=self.sort_ascending
         )], scroll=ft.ScrollMode.ADAPTIVE, expand=1)
         self.dt.controls[0].rows.clear()
 

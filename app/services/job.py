@@ -47,6 +47,7 @@ class JobService:
     def get_jobs_rooms_with_id(self) -> list[dict]:
         data = self.job_room_repository.get_list_items_by_filter()
         data = [object_as_dict(i) for i in data]
+        data.sort(key=lambda x: x['name'])
         return data
 
     # -------- JOB TYPE --------
@@ -69,10 +70,10 @@ class JobService:
         job_type = self.job_type_repository.get_item_by_filter(name=name)
         return object_as_dict(job_type)
 
-    def get_job_type_by_id(self, room_id: int) -> dict | None:
-        if room_id is None:
+    def get_job_type_by_id(self, job_type_id: int) -> dict | None:
+        if job_type_id is None:
             return None
-        data = self.job_type_repository.get_item_by_filter(id=room_id)
+        data = self.job_type_repository.get_item_by_filter(id=job_type_id)
         return object_as_dict(data)['name']
 
     def get_jobs_types(self) -> list[str]:
@@ -84,6 +85,7 @@ class JobService:
     def get_jobs_types_with_id(self) -> list[dict]:
         data = self.job_type_repository.get_list_items_by_filter()
         data = [object_as_dict(i) for i in data]
+        data.sort(key=lambda x: x['name'])
         return data
 
     # -------- JOB --------

@@ -112,6 +112,7 @@ class EventService:
     def get_events_types_with_id(self) -> list:
         data = self.event_type_repository.get_list_items_by_filter()
         data = [object_as_dict(i) for i in data]
+        data.sort(key=lambda x: x['name'])
         return data
 
 

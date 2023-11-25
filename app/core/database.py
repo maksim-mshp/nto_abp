@@ -43,7 +43,7 @@ def add_sample_data():
 
     with session_maker() as session:
         session.add_all([
-            EventType(name='Cпектакль'),
+            EventType(name='Спектакль'),
             EventType(name='Концерт'),
             EventType(name='Репетиция'),
             EventType(name='Выставка'),
