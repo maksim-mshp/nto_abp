@@ -103,7 +103,7 @@ class JobTypeModal:
         self.page = page
         self.close_event = close_event
 
-        self.form = ft.Column(controls=[], height=400, width=500)
+        self.form = ft.Column(controls=[], height=400, width=500, scroll=ft.ScrollMode.ADAPTIVE, expand=1)
         for i in job_service.get_jobs_types_with_id():
             self.form.controls.append(JobType(self.on_type_delete, i['name'], i['id']).component)
 

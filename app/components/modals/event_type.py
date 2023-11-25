@@ -103,7 +103,7 @@ class TypeModal:
         self.page = page
         self.close_event = close_event
 
-        self.form = ft.Column(controls=[], height=400, width=500)
+        self.form = ft.Column(controls=[], height=400, width=500, scroll=ft.ScrollMode.ADAPTIVE, expand=1)
         for i in event_service.get_events_types_with_id():
             self.form.controls.append(EventType(self.on_type_delete, i['name'], i['id']).component)
 
