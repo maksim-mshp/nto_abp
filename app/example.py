@@ -1,48 +1,32 @@
 from datetime import datetime
 
-from repositories.event_type import EventTypeRepository
-from repositories.event import EventRepository
-
 from utils import object_as_dict
 from core.database import add_sample_data
+from services.job import job_service
+from services.event import event_service
 
 add_sample_data()
 
 
 def example():
-    sample_type = {
-        'name': 'Выставка'
-    }
+    job = job_service.get_job_by_id(2)
+    print(job)
+    job_service.change_job_status(2, 'К работе')
+    job = job_service.get_job_by_id(2)
+    print(job)
+    event = event_service.get_events('Просвещение')[0]
+    job_room = job_service.create_job_room('комната')
+    job_type = job_service.create_job_type('тип работы')
+    job = job_service.create_job(
+        'title',
+        'desc',
+        event['id'],
+        job_type['id'],
+        job_room['id'],
+        datetime(2023, 12, 12),
+        'К работе'
+    )
+    print(job)
 
-    result_event_type = EventTypeRepository().create(**sample_type)
-    print(result_event_type.id)
-    print(object_as_dict(result_event_type))
-    sample_event = {
-        'title': 'Название',
-        'description': 'описание',
-        'date': datetime.now(),
-        'category': 'просвещение',
-        'event_type_id': result_event_type.id
-    }
-    # создание мероприятия
-    result_event = EventRepository().create(**sample_event)
-    print(object_as_dict(result_event))
 
-    # получение списка мероприятий
-    result = EventRepository().get_list_items_by_filter()
-    print(result)
-
-    # редактирование мероприятия
-    update_data = {
-        'description': 'описание123'
-    }
-    result = EventRepository().update_by_id(result_event.id, **update_data)
-    print(object_as_dict(result))
-
-    result = EventRepository().get_list_items_by_filter()
-    print(result)
-
-    # удаление мероприятия
-    result = EventRepository().delete_by_id(result_event.id)
-    result = EventRepository().get_list_items_by_filter()
-    print(result)
+example()
