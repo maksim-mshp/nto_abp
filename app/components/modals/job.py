@@ -89,7 +89,7 @@ class JobModal:
             self.room,
             self.date_btn,
             ft.Container(expand=1, content=self.description),
-        ], width=625, spacing=17, height=530, scroll=ft.ScrollMode.ADAPTIVE)
+        ], width=625, spacing=17, height=530)
 
         self.reset()
         self.date_btn.text = self.get_btn_text()
