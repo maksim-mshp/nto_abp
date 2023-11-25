@@ -56,7 +56,7 @@ class EventModal:
             self.type,
             self.date_btn,
             ft.Container(expand=1, content=self.description),
-        ], height=530, width=615, spacing=17)
+        ], height=530, width=625, spacing=17)
 
         self.reset()
         self.date_btn.text = self.get_btn_text()

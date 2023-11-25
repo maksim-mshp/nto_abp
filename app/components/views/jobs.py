@@ -45,16 +45,12 @@ class Jobs:
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         ))
 
-        self.filter_by = ft.Dropdown(
-            options=[ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_types_with_id()],
-            label='Фильтр',
-            on_change=self.on_change,
-            dense=True,
-        )
+        self.filter_by = self.create_dropdown()
 
         self.dt = None
         self.filter = ft.Row([
-            ft.Container(ft.Icon(ft.icons.FILTER_LIST), padding=ft.Padding(left=10, right=10, top=0, bottom=0)),
+            ft.Container(ft.Icon(ft.icons.FILTER_LIST, tooltip='Фильтр'),
+                         padding=ft.Padding(left=10, right=10, top=0, bottom=0)),
             self.filter_by,
             ft.IconButton(ft.icons.CLEAR, tooltip='Очистить фильтр', on_click=self.clear_filter)
         ])
@@ -66,6 +62,14 @@ class Jobs:
         self.hide()
         self.on_change()
 
+    def create_dropdown(self):
+        return ft.Dropdown(
+            options=[ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_types_with_id()],
+            label='Вид работы',
+            on_change=self.on_change,
+            dense=True,
+        )
+
     def show(self):
         self.component.visible = True
         self.create_btn.visible = True
@@ -73,12 +77,7 @@ class Jobs:
         self.safe_update()
 
     def clear_filter(self, e):
-        self.filter_by = ft.Dropdown(
-            options=[ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_types_with_id()],
-            label='Фильтр',
-            on_change=self.on_change,
-            dense=True,
-        )
+        self.filter_by = self.create_dropdown()
         self.filter.controls[1] = self.filter_by
         self.filter.update()
         self.on_change()
@@ -107,13 +106,19 @@ class Jobs:
         except ValueError:
             pass
 
+    def open_edit_job(self, e):
+        self.modal = JobModal(self.page, close_event=self.on_change, id=e.control.data)
+        self.page.dialog = self.modal.dialog
+        self.modal.open()
+        self.safe_update()
+        self.page.update()
+
     def on_change(self, e=None):
         filt = {}
         if self.tabs.selected_index == 0:
             filt['status'] = JOB_STATUSES[1]
         if self.filter_by.value is not None and self.filter_by.value != '':
             filt['job_type_id'] = self.filter_by.value
-        print(filt)
 
         jobs = job_service.get_jobs(**filt)
 
@@ -139,7 +144,8 @@ class Jobs:
                         ft.DataCell(JobStatusChip(JOB_STATUSES.index(job['status'])).chip),
                         ft.DataCell(ft.Text(job_service.get_job_type_by_id(job['job_type_id']))),
                     ],
-                    data=job['id']
+                    data=job['id'],
+                    on_select_changed=self.open_edit_job,
                 ) for job in jobs
             ]
 

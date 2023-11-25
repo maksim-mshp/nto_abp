@@ -1,6 +1,5 @@
 import flet as ft
 from datetime import datetime
-
 from sqlalchemy import inspect
 
 CATEGORIES = ['Развлечения', 'Просвещение', 'Образование']
@@ -20,11 +19,13 @@ def object_as_dict(obj):
     }
 
 
-def get_formatted_date(date: datetime) -> str:
+def get_formatted_date(date: datetime | None) -> str | None:
+    if date is None:
+        return None
     return date.strftime('%d.%m.%Y')
 
 
 def truncate_text(s: str, max_length: int = 50) -> str:
-    if len(str) <= max_length:
+    if len(s) <= max_length:
         return s
     return s[:max_length] + '...'

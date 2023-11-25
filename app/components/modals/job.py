@@ -4,20 +4,21 @@ import flet as ft
 from services.event import event_service
 from services.job import job_service
 import utils
-from utils import JOB_STATUSES
+from utils import JOB_STATUSES, truncate_text
 from components.job_status_chip import JobStatusChip
 
 
 class JobModal:
 
     def __init__(self, page: ft.Page, close_event, category=None, id=None):
+        self.registration_date = None
         self.page = page
         self.close_event = close_event
         self.category = category
         self.id = id
 
         self.event = ft.Dropdown(
-            options=[ft.dropdown.Option(i['id'], i['title']) for i in event_service.get_events()],
+            options=[ft.dropdown.Option(i['id'], truncate_text(i['title'], 67)) for i in event_service.get_events()],
             label='Мероприятие',
             on_change=self.on_event_change,
             dense=True
@@ -44,6 +45,8 @@ class JobModal:
             value=JOB_STATUSES[0],
             dense=True
         )
+
+        self.reg_text = ft.Text('', visible=False)
 
         self.name = ft.TextField(label="Название", on_change=self.on_name_change, dense=True)
         self.description = ft.TextField(label="Описание", multiline=True, dense=True)
@@ -78,6 +81,7 @@ class JobModal:
                                           icon=ft.icons.EDIT_CALENDAR, style=self.normal_btn_style)
 
         self.form = ft.Column(controls=[
+            self.reg_text,
             self.name,
             self.status,
             self.event,
@@ -85,7 +89,7 @@ class JobModal:
             self.room,
             self.date_btn,
             ft.Container(expand=1, content=self.description),
-        ], width=615, spacing=17, height=530)
+        ], width=625, spacing=17, height=530)
 
         self.reset()
         self.date_btn.text = self.get_btn_text()
@@ -107,7 +111,7 @@ class JobModal:
             self.dialog.actions_alignment = ft.MainAxisAlignment.END
             return
 
-        self.dialog.actions.insert(0, ft.TextButton("Удалить мероприятие", on_click=self.remove, style=ft.ButtonStyle(
+        self.dialog.actions.insert(0, ft.TextButton("Удалить заявку", on_click=self.remove, style=ft.ButtonStyle(
             color=ft.colors.RED_ACCENT_700,
             bgcolor={
                 ft.MaterialState.HOVERED: ft.colors.RED_100,
@@ -115,6 +119,9 @@ class JobModal:
             shape=ft.RoundedRectangleBorder(radius=10),
             padding=15
         )))
+
+    def get_reg_text(self):
+        return f'Дата регистрации заявки: {utils.get_formatted_date(self.registration_date)}'
 
     def reset(self):
         self.name.error_text = None
@@ -132,12 +139,20 @@ class JobModal:
             self.status.value = JOB_STATUSES[0]
             self.date.value = None
             self.description.value = ''
+            self.reg_text.value = ''
+            self.reg_text.visible = False
         else:
-            event = event_service.get_event_by_id(self.id)
-            self.name.value = event['title']
-            self.event.value = event_service.get_event_type_by_id(event['event_type_id'])
-            self.date.value = event['date']
-            self.description.value = event['description']
+            job = job_service.get_job_by_id(self.id)
+            self.name.value = job['title']
+            self.description.value = job['description']
+            self.event.value = job['event_id']
+            self.job_type.value = job['job_type_id']
+            self.room.value = job['job_room_id']
+            self.date.value = job['deadline']
+            self.status.value = job['status']
+            self.registration_date = job['registration_date']
+            self.reg_text.value = self.get_reg_text()
+            self.reg_text.visible = True
 
     def close(self):
         self.dialog.open = False
@@ -156,7 +171,7 @@ class JobModal:
         self.close()
 
     def remove(self, e):
-        event_service.delete_event(self.id)
+        job_service.delete_job(self.id)
         self.id = None
         self.close()
 
@@ -233,7 +248,15 @@ class JobModal:
                 self.status.value
             )
         else:
-            event_service.update_event(self.id, self.name.value.strip(), self.date.value, self.event.value,
-                                       self.description.value.strip(), self.category)
+            job_service.update_job(
+                self.id,
+                self.name.value.strip(),
+                self.description.value.strip(),
+                self.event.value,
+                self.job_type.value,
+                self.room.value,
+                self.date.value,
+                self.status.value
+            )
 
         self.close()
