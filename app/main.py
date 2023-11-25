@@ -19,7 +19,7 @@ def main(page: ft.Page):
     page.window_maximized = True
     add_sample_data()
 
-    page_index = 1
+    page_index = 0
     views = [
         Events(page),
         Jobs(page)

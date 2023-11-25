@@ -66,19 +66,19 @@ def add_sample_data():
             JobRoom(name='Театральная сцена'),
             JobRoom(name='Звукозаписывающая студия'),
             Job(title='Подготовка и установка экспонатов в выставочном зале', description='', event_id=1, job_type_id=2,
-                job_room_id=2, registration_date=datetime.now(), deadline=datetime(2023, 11, 25),
+                job_room_id=2, registration_date=datetime.now(), deadline=datetime(2023, 11, 29),
                 status=JOB_STATUSES[0]),
             Job(title='Настройка освещения в концертном зале', description='', event_id=3, job_type_id=4, job_room_id=1,
                 registration_date=datetime.now(), deadline=datetime(2023, 11, 25), status=JOB_STATUSES[0]),
             Job(title='Настройка освещения в выставочном зале', description='', event_id=1, job_type_id=4,
-                job_room_id=2, registration_date=datetime.now(), deadline=datetime(2023, 11, 25),
+                job_room_id=2, registration_date=datetime.now(), deadline=datetime(2023, 11, 29),
                 status=JOB_STATUSES[1]),
             Job(title='Настройка звукозаписывающего оборудования в концертном зале', description='', event_id=3,
-                job_type_id=3, job_room_id=1, registration_date=datetime.now(), deadline=datetime(2023, 11, 25),
+                job_type_id=3, job_room_id=1, registration_date=datetime.now(), deadline=datetime(2023, 12, 6),
                 status=JOB_STATUSES[1]),
             Job(title='Уборка выставочного зала', description='', event_id=1, job_type_id=1, job_room_id=2,
-                registration_date=datetime.now(), deadline=datetime(2023, 11, 25), status=JOB_STATUSES[2]),
+                registration_date=datetime.now(), deadline=datetime(2023, 11, 26), status=JOB_STATUSES[2]),
             Job(title='Уборка концертного зала', description='', event_id=3, job_type_id=1, job_room_id=1,
-                registration_date=datetime.now(), deadline=datetime(2023, 11, 25), status=JOB_STATUSES[2])
+                registration_date=datetime.now(), deadline=datetime(2023, 11, 27), status=JOB_STATUSES[2])
         ])
         session.commit()
