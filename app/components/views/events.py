@@ -1,6 +1,6 @@
 import flet as ft
 from components.modals.event import EventModal
-from components.modals.event_type import TypeModal
+from components.modals.event_type import EventTypeModal
 
 from services.event import event_service
 from utils import CATEGORIES, get_formatted_date
@@ -67,7 +67,7 @@ class Events:
         self.page.update()
 
     def manage_types_clicked(self, e):
-        self.modal = TypeModal(self.page, close_event=self.on_change)
+        self.modal = EventTypeModal(self.page, close_event=self.on_change)
         self.page.dialog = self.modal.dialog
         self.modal.open()
         self.safe_update()

@@ -1,26 +1,29 @@
 import flet as ft
+
 import utils
 
-from services.job import job_service
 
-
-class Room:
-    def __init__(self, on_delete, text: str = '', id=None):
+class Object:
+    def __init__(self, on_delete, check_is_using, create, update, delete, text: str = '', id=None):
         self.is_editing = id is None
         self.text = text
         self.error = False
         self.id = id
         self.on_delete = on_delete
+        self.check_is_using = check_is_using
+        self.create = create
+        self.update = update
+        self.delete = delete
 
         del_btn = ft.IconButton(
             ft.icons.DELETE_OUTLINE,
             tooltip="Удалить",
-            on_click=self.delete,
+            on_click=self._delete,
         )
 
-        if (self.id is not None) and job_service.is_job_room_using(self.id):
+        if (self.id is not None) and self.check_is_using(self.id):
             del_btn.disabled = True
-            del_btn.tooltip = 'Невозможно удалить, т.к. это помещение используется'
+            del_btn.tooltip = 'Невозможно удалить, т.к. объект используется'
 
         self.display_view = ft.Row(
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -34,7 +37,7 @@ class Room:
                         ft.IconButton(
                             icon=ft.icons.CREATE_OUTLINED,
                             tooltip="Редактировать",
-                            on_click=self.toggle_editing
+                            on_click=self._toggle_editing
                         ),
                         del_btn
                     ],
@@ -42,7 +45,7 @@ class Room:
             ],
         )
 
-        self.input = ft.TextField(expand=1, value=self.text, on_focus=self.on_focus_input, dense=True)
+        self.input = ft.TextField(expand=1, value=self.text, on_focus=self._on_focus_input, dense=True)
 
         self.edit_view = ft.Row(
             visible=self.is_editing,
@@ -53,20 +56,20 @@ class Room:
                 ft.IconButton(
                     icon=ft.icons.DONE,
                     tooltip="Сохранить",
-                    on_click=self.save
+                    on_click=self._save
                 ),
             ],
         )
 
         self.component = ft.Column(controls=[self.display_view, self.edit_view], data=self.id)
 
-    def on_focus_input(self, e=None):
+    def _on_focus_input(self, e=None):
         if self.error:
             self.error = False
             self.input.error_text = None
             self.component.update()
 
-    def toggle_editing(self, e=None):
+    def _toggle_editing(self, e=None):
         self.is_editing = not self.is_editing
         self.display_view.visible = not self.is_editing
         self.edit_view.visible = self.is_editing
@@ -76,7 +79,7 @@ class Room:
 
         self.component.update()
 
-    def save(self, e):
+    def _save(self, e):
         if self.input.value.strip() == '':
             self.error = True
             self.input.error_text = 'Введите значение'
@@ -85,30 +88,55 @@ class Room:
 
         self.text = self.input.value.strip()
         self.display_view.controls[0].value = self.text
-        self.toggle_editing()
+        self._toggle_editing()
 
         if self.id is None:
-            self.id = job_service.create_job_room(name=self.text)['id']
+            self.id = self.create(self.text)['id']
             self.component.data = self.id
             return
-        job_service.update_job_room(self.id, name=self.text)
+        self.update(self.id, self.text)
 
-    def delete(self, e):
-        job_service.delete_job_room(self.id)
+    def _delete(self, e):
+        self.delete(self.id)
         self.on_delete(self.id)
 
 
-class RoomModal:
+class ManageModal:
     def __init__(self, page: ft.Page, close_event):
         self.page = page
         self.close_event = close_event
 
+        self.title = ''
+        self.objects = []
+
+        self.form = None
+        self.dialog = None
+
+    @staticmethod
+    def check_is_using(id: int) -> bool:
+        pass
+
+    @staticmethod
+    def create(title: str) -> dict:
+        pass
+
+    @staticmethod
+    def update(id: int, title: str):
+        pass
+
+    @staticmethod
+    def delete(id: int):
+        pass
+
+    def init(self):
         self.form = ft.Column(controls=[], height=400, width=500, scroll=ft.ScrollMode.ADAPTIVE, expand=1)
-        for i in job_service.get_jobs_rooms_with_id():
-            self.form.controls.append(Room(self.on_type_delete, i['name'], i['id']).component)
+        for i in self.objects:
+            self.form.controls.append(
+                Object(self.on_type_delete, self.check_is_using, self.create, self.update, self.delete, i['name'],
+                       i['id']).component)
 
         self.dialog = ft.AlertDialog(
-            title=ft.Row([ft.Text("Управление помещениями"), ft.IconButton(
+            title=ft.Row([ft.Text(self.title), ft.IconButton(
                 icon=ft.icons.ADD,
                 tooltip="Добавить",
                 on_click=self.add_type
@@ -122,7 +150,8 @@ class RoomModal:
         )
 
     def add_type(self, e):
-        self.form.controls.append(Room(self.on_type_delete).component)
+        self.form.controls.append(
+            Object(self.on_type_delete, self.check_is_using, self.create, self.update, self.delete).component)
         self.dialog.update()
         self.form.controls[-1].controls[-1].controls[0].focus()
 
