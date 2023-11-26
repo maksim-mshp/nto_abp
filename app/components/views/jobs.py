@@ -3,7 +3,7 @@ import flet as ft
 from components.job_status_chip import JobStatusChip
 from components.modals.job import JobModal
 from components.modals.job_type import JobTypeModal
-from components.modals.rooms import RoomModal
+from components.modals.job_room import JobRoomModal
 
 from services.job import job_service
 from utils import get_formatted_date, JOB_STATUSES
@@ -177,7 +177,7 @@ class Jobs:
         self.page.update()
 
     def manage_rooms_clicked(self, e):
-        self.modal = RoomModal(self.page, close_event=self.on_change)
+        self.modal = JobRoomModal(self.page, close_event=self.on_change)
         self.page.dialog = self.modal.dialog
         self.modal.open()
         self.safe_update()
