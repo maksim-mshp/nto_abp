@@ -3,7 +3,7 @@ from typing import Any
 
 from repositories.job import JobRepository
 from repositories.job_type import JobTypeRepository
-from repositories.job_room import JobRoomRepository
+from repositories.room import RoomRepository
 
 from utils import object_as_dict
 
@@ -12,7 +12,7 @@ class JobService:
     def __init__(self):
         self.job_repository = JobRepository()
         self.job_type_repository = JobTypeRepository()
-        self.job_room_repository = JobRoomRepository()
+        self.job_room_repository = RoomRepository()
 
     # -------- JOB ROOM --------
 

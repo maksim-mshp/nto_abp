@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database import Base
-from models.job_room import JobRoom
+from models.room import Room
 from models.job_type import JobType
 from models.event import Event
 
@@ -22,8 +22,8 @@ class Job(Base):
     job_type_id: Mapped[int] = mapped_column(ForeignKey("jobs_type.id"))
     job_type: Mapped["JobType"] = relationship("JobType", lazy="joined")
 
-    job_room_id: Mapped[int] = mapped_column(ForeignKey("jobs_room.id"))
-    job_room: Mapped["JobRoom"] = relationship("JobRoom", lazy="joined")
+    job_room_id: Mapped[int] = mapped_column(ForeignKey("room.id"))
+    job_room: Mapped["Room"] = relationship("Room", lazy="joined")
 
     registration_date: Mapped[datetime] = mapped_column(default=datetime.now())
     deadline: Mapped[datetime]

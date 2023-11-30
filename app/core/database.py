@@ -16,7 +16,7 @@ class Base(DeclarativeBase):
 from models.event_type import EventType
 from models.event import Event
 from models.job_type import JobType
-from models.job_room import JobRoom
+from models.room import Room
 from models.job import Job
 
 from utils import CATEGORIES, JOB_STATUSES
@@ -61,10 +61,10 @@ def add_sample_data():
             JobType(name='Установка экспонатов'),
             JobType(name='Настройка оборудования'),
             JobType(name='Настройка освещения'),
-            JobRoom(name='Концертный зал'),
-            JobRoom(name='Выставочный зал'),
-            JobRoom(name='Театральная сцена'),
-            JobRoom(name='Звукозаписывающая студия'),
+            Room(name='Концертный зал'),
+            Room(name='Выставочный зал'),
+            Room(name='Театральная сцена'),
+            Room(name='Звукозаписывающая студия'),
             Job(title='Подготовка и установка экспонатов в выставочном зале', description='', event_id=1, job_type_id=2,
                 job_room_id=2, registration_date=datetime.now(), deadline=datetime(2023, 11, 29),
                 status=JOB_STATUSES[0]),

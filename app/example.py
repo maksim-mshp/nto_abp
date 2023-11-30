@@ -1,32 +1,24 @@
-from datetime import datetime
-
-from utils import object_as_dict
+from datetime import datetime, timedelta
 from core.database import add_sample_data
-from services.job import job_service
-from services.event import event_service
+from services.reservation import reservation_service
 
 add_sample_data()
 
 
 def example():
-    job = job_service.get_job_by_id(2)
-    print(job)
-    job_service.change_job_status(2, 'К работе')
-    job = job_service.get_job_by_id(2)
-    print(job)
-    event = event_service.get_events('Просвещение')[0]
-    job_room = job_service.create_job_room('комната')
-    job_type = job_service.create_job_type('тип работы')
-    job = job_service.create_job(
-        'title',
-        'desc',
-        event['id'],
-        job_type['id'],
-        job_room['id'],
-        datetime(2023, 12, 12),
-        'К работе'
-    )
-    print(job)
+    start_date_time = datetime(2023, 11, 29, 8, 0, 0)
+    # array with 720 intervals
+    datetimes_list = [start_date_time + timedelta(hours=i) for i in range(720)]
+    reservation_service.create(room_id=1, event_id=1, intervals=datetimes_list)
+
+    print(reservation_service.get_by_room_id(room_id=1))
+
+    start_date_time = datetime(2022, 11, 29, 8, 0, 0)
+    # array with 720 intervals
+    datetimes_list = [start_date_time + timedelta(hours=i) for i in range(720)]
+    reservation_service.update_by_id(reservation_id=1, room_id=2, event_id=1, intervals=datetimes_list)
+
+    print(reservation_service.get_by_room_id(room_id=2))
 
 
 example()
