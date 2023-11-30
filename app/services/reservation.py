@@ -18,9 +18,12 @@ class ReservationService:
             self,
             room_id: int,
             event_id: int,
-            intervals: list[datetime]
+            intervals: list[datetime],
+            half_reservation: bool = False
     ) -> dict:
-        reservation = object_as_dict(self.reservation_repository.create(room_id=room_id, event_id=event_id))
+        reservation = object_as_dict(
+            self.reservation_repository.create(room_id=room_id, event_id=event_id, half_reservation=half_reservation)
+        )
         self.time_interval_repository.create(reservation_id=reservation['id'], intervals=intervals)
         return reservation
 
@@ -45,6 +48,7 @@ class ReservationService:
             room_id: Optional[int] = None,
             event_id: Optional[int] = None,
             intervals: Optional[list[datetime]] = None,
+            half_reservation: Optional[bool] = None,
     ) -> dict:
         old_reservation = self.reservation_repository.get_item_by_filter(id=reservation_id)
 
@@ -52,13 +56,15 @@ class ReservationService:
             room_id = old_reservation.room_id
         if not event_id:
             event_id = old_reservation.event_id
+        if not half_reservation:
+            half_reservation = old_reservation.half_reservation
         if not intervals:
             intervals = []
             for interval in old_reservation.intervals:
                 intervals.append(object_as_dict(interval)['start_date_time'])
 
         self.delete_by_id(reservation_id)
-        reservation = self.create(room_id, event_id, intervals)
+        reservation = self.create(room_id, event_id, intervals, half_reservation)
         return reservation
 
 

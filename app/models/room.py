@@ -8,3 +8,4 @@ class Room(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
+    half_reservation: Mapped[bool] = mapped_column(default=False)

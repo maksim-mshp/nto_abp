@@ -13,6 +13,8 @@ class Reservation(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
+    half_reservation: Mapped[bool] = mapped_column(default=False)
+
     room_id: Mapped[int] = mapped_column(ForeignKey("room.id"))
     room: Mapped["Room"] = relationship("Room", lazy="joined")
 
