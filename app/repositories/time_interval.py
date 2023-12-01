@@ -5,6 +5,7 @@ import sqlalchemy
 from core.database import session_maker
 from repositories.base import BaseRepository
 from models.time_interval import TimeInterval
+from models.reservation import Reservation
 
 
 class TimeIntervalRepository(BaseRepository):
@@ -15,15 +16,18 @@ class TimeIntervalRepository(BaseRepository):
             for interval in intervals:
                 item = self.model(reservation_id=reservation_id,
                                   start_date_time=interval,
-                                  end_date_time=interval+timedelta(hours=1)
+                                  end_date_time=interval + timedelta(hours=1)
                                   )
                 session.add(item)
             session.commit()
             return item
 
-    def get_all_by_datetime(self, date_time: datetime):
+    def get_all_by_date_and_room(self, date_time: datetime, room_id: int):
         with session_maker() as session:
-            objects_on_date = session.query(self.model).filter(
-                sqlalchemy.func.date(TimeInterval.start_date_time) == date_time.date()
+            objects_on_date = session.query(TimeInterval).join(TimeInterval.reservation).filter(
+                sqlalchemy.and_(
+                    sqlalchemy.func.date(TimeInterval.start_date_time) == date_time.date(),
+                    Reservation.room_id == room_id
+                )
             ).all()
             return objects_on_date

@@ -1,6 +1,7 @@
 from utils import *
 from components.views.events import Events
 from components.views.jobs import Jobs
+from components.views.rooms import Rooms
 from components.navbar import NavigationBar
 from core.database import add_sample_data
 from tendo import singleton
@@ -19,10 +20,11 @@ def main(page: ft.Page):
     page.window_maximized = True
     add_sample_data()
 
-    page_index = 0
+    page_index = 2
     views = [
         Events(page),
-        Jobs(page)
+        Jobs(page),
+        Rooms(page)
     ]
 
     def on_page_change(e):
@@ -45,4 +47,4 @@ def main(page: ft.Page):
         i.safe_update()
 
 
-ft.app(target=main)
+ft.app(target=main, view=ft.AppView.WEB_BROWSER)
