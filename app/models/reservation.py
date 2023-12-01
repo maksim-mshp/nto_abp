@@ -3,7 +3,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database import Base
 
-from models.time_interval import TimeInterval
 from models.room import Room
 from models.event import Event
 
@@ -21,4 +20,6 @@ class Reservation(Base):
     event_id: Mapped[int] = mapped_column(ForeignKey("events.id"))
     event: Mapped["Event"] = relationship("Event", lazy="joined")
 
-    intervals: Mapped[list["TimeInterval"] | None] = relationship(lazy='joined', cascade="all,delete")
+    intervals: Mapped[list["TimeInterval"] | None] = relationship(back_populates="reservation",
+                                                                  lazy='joined',
+                                                                  cascade="all,delete")

@@ -67,5 +67,16 @@ class ReservationService:
         reservation = self.create(room_id, event_id, intervals, half_reservation)
         return reservation
 
+    def get_time_intervals_by_date(self, date_time: datetime):
+        objects_on_date = self.time_interval_repository.get_all_by_datetime(date_time)
+        obj_as_list = [{
+            'start_date_time': i.start_date_time,
+            'reservation': {
+                'room': i.reservation.room.name,
+                'event': i.reservation.event.title,
+            }
+        } for i in objects_on_date]
+        return obj_as_list
+
 
 reservation_service = ReservationService()

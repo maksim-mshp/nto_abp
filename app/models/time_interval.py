@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database import Base
 
@@ -15,3 +15,5 @@ class TimeInterval(Base):
     end_date_time: Mapped[datetime]
 
     reservation_id: Mapped[int] = mapped_column(ForeignKey("reservation.id"))
+    reservation: Mapped["Reservation"] = relationship(back_populates="intervals",
+                                                      lazy="joined")
