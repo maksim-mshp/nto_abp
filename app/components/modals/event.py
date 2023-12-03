@@ -7,7 +7,7 @@ import utils
 
 class EventModal:
 
-    def __init__(self, page: ft.Page, close_event, category=None, id=None, reset=False):
+    def __init__(self, page: ft.Page, close_event, category=None, id=None, reset=True):
         self.page = page
         self.close_event = close_event
         self.category = category

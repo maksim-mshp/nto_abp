@@ -13,7 +13,7 @@ class Events:
 
     def __init__(self, page: ft.Page):
         self.page = page
-        self.modal = None
+        self.modal_edit = None
         self.dt = None
         self.component = ft.Column(controls=[], expand=1)
         self.nothing = ft.Container(ft.Text("Ничего не найдено"), width=100000, padding=50,
@@ -24,6 +24,10 @@ class Events:
             tabs=[ft.Tab(text=x) for x in CATEGORIES],
             on_change=self.on_change,
         )
+
+        self.modal = EventModal(self.page,
+                                close_event=self.on_change,
+                                category=CATEGORIES[self.tabs.selected_index])
 
         self.create_btn = ft.FloatingActionButton(icon=ft.icons.ADD, on_click=self.add_clicked)
         self.page.add(self.create_btn)
@@ -49,7 +53,6 @@ class Events:
         self.create_btn.visible = False
         if self.modal:
             self.modal.close()
-        self.modal = None
         self.safe_update()
         self.page.update()
 
@@ -60,9 +63,6 @@ class Events:
             pass
 
     def add_clicked(self, e):
-        self.modal = EventModal(self.page,
-                                close_event=self.on_change,
-                                category=CATEGORIES[self.tabs.selected_index])
         self.page.dialog = self.modal.dialog
         self.modal.open()
         self.safe_update()
@@ -76,9 +76,9 @@ class Events:
         self.page.update()
 
     def open_modal(self, e):
-        self.modal = EventModal(self.page, close_event=self.on_change, id=e.control.data)
-        self.page.dialog = self.modal.dialog
-        self.modal.open()
+        self.modal_edit = EventModal(self.page, close_event=self.on_change, id=e.control.data)
+        self.page.dialog = self.modal_edit.dialog
+        self.modal_edit.open()
         self.safe_update()
         self.page.update()
 
