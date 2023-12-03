@@ -299,7 +299,6 @@ class ReservationTable(ft.UserControl):
                         self.selected_fields.remove(e.control.data)
 
             e.control.update()
-            print(self.selected_fields)
 
     def reset(self, new_room_id: Optional[int] = None):
         if new_room_id:
