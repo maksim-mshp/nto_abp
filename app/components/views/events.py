@@ -50,6 +50,9 @@ class Events:
         if STORAGE.get('from_reservation', False):
             self.add_clicked()
             STORAGE['from_reservation'] = False
+        if STORAGE.get('event_id', None) is not None:
+            self.open_modal(id=STORAGE['event_id'])
+            STORAGE['event_id'] = None
 
     def hide(self):
         self.component.visible = False
@@ -66,6 +69,7 @@ class Events:
             pass
 
     def add_clicked(self, e=None):
+        """открывает модалку создания"""
         self.page.dialog = self.modal.dialog
         self.modal.open()
         self.safe_update()
@@ -78,8 +82,11 @@ class Events:
         self.safe_update()
         self.page.update()
 
-    def open_modal(self, e):
-        self.modal_edit = EventModal(self.page, close_event=self.on_change, id=e.control.data)
+    def open_modal(self, e=None, id=None):
+        """открывает модалку редактирования"""
+        if e:
+            id = e.control.data
+        self.modal_edit = EventModal(self.page, close_event=self.on_change, id=id)
         self.page.dialog = self.modal_edit.dialog
         self.modal_edit.open()
         self.safe_update()

@@ -53,6 +53,7 @@ class Reservation:
         self.safe_update()
 
     def show(self):
+        self.table.controls[0].reset(STORAGE['room_id'])
         self.component.visible = True
         self.page.title = self.VIEW_TITLE
         self.safe_update()
@@ -63,5 +64,5 @@ class Reservation:
         utils.on_page_change_func(new_index=0)
 
     def save_handler(self, e=None):
-        STORAGE['selected_fields'] = self.table.selected_fields
+        STORAGE['selected_fields'] = self.table.controls[0].selected_fields
         self.go_back_handler()

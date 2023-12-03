@@ -4,6 +4,7 @@ import flet as ft
 from services.event import event_service
 import utils
 from services.job import job_service
+from services.reservation import reservation_service
 
 
 class EventModal:
@@ -53,7 +54,8 @@ class EventModal:
                                           icon=ft.icons.EDIT_CALENDAR, style=self.normal_btn_style)
 
         self.select_time_btn = ft.ElevatedButton('Бронирование помещения', on_click=self.redirect_view,
-                                                 icon=ft.icons.MEETING_ROOM, style=self.normal_btn_style)
+                                                 icon=ft.icons.MEETING_ROOM, style=self.normal_btn_style,
+                                                 )
 
         self.room = ft.Dropdown(
             options=[ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_rooms_with_id()],
@@ -70,8 +72,6 @@ class EventModal:
             self.select_time_btn,
             ft.Container(expand=1, content=self.description),
         ], height=530, width=625, spacing=17)
-
-        self.date_btn.text = self.get_btn_text()
 
         self.dialog = ft.AlertDialog(
             title=ft.Text("Создание мероприятия" if self.id is None else 'Редактирование мероприятия'),
@@ -101,29 +101,37 @@ class EventModal:
 
     def on_room_change(self, e=None):
         utils.STORAGE['room_id'] = self.room.value
+        self.select_time_btn.disabled = False
+        self.select_time_btn.update()
 
-    @staticmethod
-    def redirect_view(e=None):
-        # self.close()
+    def redirect_view(self, e=None):
+        utils.STORAGE['room_id'] = self.room.value
+        utils.STORAGE['event_id'] = self.id
+        self.close()
         utils.on_page_change_func(new_index=3)
 
     def reset(self):
         self.name.error_text = None
         self.type.error_text = None
         self.date_btn.style = self.normal_btn_style
+        self.select_time_btn.disabled = not self.id
 
         if self.id is None:
             self.name.value = ''
             self.type.value = None
             self.date.value = None
+            self.room.value = None
             self.description.value = ''
         else:
             event = event_service.get_event_by_id(self.id)
             self.category = event['category']
             self.name.value = event['title']
+            self.room.value = reservation_service.get_by_event_id(self.id)['room_id']
             self.type.value = event_service.get_event_type_by_id(event['event_type_id'])
             self.date.value = event['date']
             self.description.value = event['description']
+
+        self.date_btn.text = self.get_btn_text()
 
         if self.category == utils.CATEGORIES[2]:
             self.type.visible = False
@@ -190,8 +198,17 @@ class EventModal:
             return
 
         if self.id is None:
-            event_service.create_event(self.name.value.strip(), self.date.value, self.type.value,
-                                       self.description.value.strip(), self.category)
+            res = event_service.create_event(self.name.value.strip(), self.date.value, self.type.value,
+                                             self.description.value.strip(), self.category)
+            reservation_service.create(
+                self.room.value,
+                res['id'],
+                utils.STORAGE['selected_fields']
+            )
+            utils.STORAGE['selected_fields'].clear()
+            utils.STORAGE['room_id'] = None
+            utils.STORAGE['event_id'] = None
+            utils.STORAGE['from_reservation'] = False
         else:
             event_service.update_event(self.id, self.name.value.strip(), self.date.value, self.type.value,
                                        self.description.value.strip(), self.category)

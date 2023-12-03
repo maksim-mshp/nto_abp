@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
+
 from .config import config
 
 engine = create_engine(config.DATABASE_URL, echo=False)  # echo=True for database debug
@@ -18,6 +19,7 @@ from models.event import Event
 from models.job_type import JobType
 from models.room import Room
 from models.job import Job
+from models.reservation import Reservation
 
 from utils import CATEGORIES, JOB_STATUSES
 
@@ -65,6 +67,9 @@ def add_sample_data():
             Room(name='Выставочный зал'),
             Room(name='Театральная сцена'),
             Room(name='Звукозаписывающая студия'),
+            Reservation(room_id=3, event_id=3),
+            Reservation(room_id=4, event_id=2),
+            Reservation(room_id=2, event_id=1),
             Job(title='Подготовка и установка экспонатов в выставочном зале', description='', event_id=1, job_type_id=2,
                 job_room_id=2, registration_date=datetime.now(), deadline=datetime(2023, 11, 29),
                 status=JOB_STATUSES[0]),
