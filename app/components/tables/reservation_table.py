@@ -48,9 +48,35 @@ class DateTile(ft.UserControl):
         )
 
 
+class ReservationContainer(ft.UserControl):
+    def __init__(self, is_booked: bool = False, is_selected: bool = False, half_reservation: bool = False,
+                 tile_width: int = 100, tile_height: int = 20):
+        super().__init__()
+        self.is_booked = is_booked
+        self.is_selected = is_selected
+        self.half_reservation = half_reservation
+        self.tile_width = tile_width
+        if half_reservation:
+            self.tile_width //= 2
+        self.tile_height = tile_height
+        self.color = NONE_COLOR
+
+    def build(self):
+        if self.is_booked:
+            self.color = BOOKED_COLOR
+        elif self.is_selected:
+            self.color = SELECTED_COLOR
+        print(self.color)
+        return ft.Container(
+            width=self.tile_width,
+            height=self.tile_height,
+            bgcolor=self.color,
+        )
+
+
 class ReservationTile(ft.UserControl):
     def __init__(self, date_time: datetime, selected_fields: list[datetime], reservation_tile_click,
-                 booked_fields: list[dict],
+                 booked_fields: list[dict], half_reservation: bool = False,
                  tile_width: int = 100, tile_height: int = 20):
         super().__init__()
         self.date_time = date_time
@@ -59,38 +85,48 @@ class ReservationTile(ft.UserControl):
         self.selected_fields = selected_fields
         self.reservation_tile_click = reservation_tile_click
         self.booked_fields = booked_fields
+        self.half_reservation = half_reservation
 
     def build(self):
-
-        if self.date_time in self.selected_fields:
-            color = SELECTED_COLOR
-        else:
-            color = NONE_COLOR
-        if self.booked_fields:
-            for field in self.booked_fields:
-                if self.date_time == field['start_date_time']:
-                    color = BOOKED_COLOR
-                    message = field['reservation']['event']
-                    return ft.Tooltip(
-                        message=message,
-                        vertical_offset=20,
-                        content=ft.Container(
-                            height=self.tile_height,
-                            width=self.tile_width,
-                            bgcolor=color,
-                            border=ft.border.all(0.2, ft.colors.BLACK),
-                            data=self.date_time,
-                            on_click=self.reservation_tile_click,
-                        )
-                    )
-        return ft.Container(
+        container = ft.Container(
             height=self.tile_height,
             width=self.tile_width,
-            bgcolor=color,
             border=ft.border.all(0.2, ft.colors.BLACK),
             data=self.date_time,
             on_click=self.reservation_tile_click,
         )
+        row = ft.Row(spacing=0)
+        if self.booked_fields:
+            booked_date_time_list = [date_time['start_date_time'] for date_time in self.booked_fields]
+            for field in self.booked_fields:
+                if field['start_date_time'] == self.date_time:
+                    if field['reservation']['half_reservation']:
+                        cnt = booked_date_time_list.count(self.date_time)
+                        if cnt == 1:
+                            row.controls.append(
+                                ReservationContainer(is_booked=True, half_reservation=True, tile_width=self.tile_width,
+                                                     tile_height=self.tile_height)
+                            )
+                        if cnt == 2:
+                            row.controls.append(
+                                ReservationContainer(is_booked=True, half_reservation=True, tile_width=self.tile_width,
+                                                     tile_height=self.tile_height),
+                                ReservationContainer(is_booked=True, half_reservation=True, tile_width=self.tile_width,
+                                                     tile_height=self.tile_height)
+                            )
+                    else:
+                        row.controls.append(
+                            ReservationContainer(is_booked=True, half_reservation=False, tile_width=self.tile_width,
+                                                 tile_height=self.tile_height)
+                        )
+        if self.date_time in self.selected_fields:
+            row.controls.append(
+                ReservationContainer(is_selected=True, half_reservation=self.half_reservation,
+                                     tile_width=self.tile_width,
+                                     tile_height=self.tile_height)
+            )
+        container.content = row
+        return container
 
 
 class TimeColumn(ft.UserControl):
@@ -119,6 +155,7 @@ class TimeColumn(ft.UserControl):
 
 class ReservationColumn(ft.UserControl):
     def __init__(self, date_time: datetime, selected_fields: list[datetime], reservation_tile_click, room_id: int,
+                 half_reservation: bool = False,
                  tile_width: int = 100, tile_height: int = 20):
         super().__init__()
         self.date_time = date_time
@@ -128,6 +165,7 @@ class ReservationColumn(ft.UserControl):
         self.reservation_tile_click = reservation_tile_click
         self.room_id = room_id
         self.booked_fields = self.get_booked_fields()
+        self.half_reservation = half_reservation
 
     def build(self):
         column = ft.Column(spacing=0)
@@ -137,6 +175,7 @@ class ReservationColumn(ft.UserControl):
         for i in range(24):
             column.controls.append(
                 ReservationTile(self.date_time, self.selected_fields, self.reservation_tile_click, self.booked_fields,
+                                self.half_reservation,
                                 self.tile_width,
                                 self.tile_height)
             )
@@ -150,6 +189,7 @@ class ReservationColumn(ft.UserControl):
 
 class ReservationTable(ft.UserControl):
     def __init__(self, date_time: datetime, room_id: int, editable: bool = False, days_count: int = 5,
+                 half_reservation: bool = False,
                  tile_width: int = 100,
                  tile_height: int = 20):
         super().__init__()
@@ -163,6 +203,7 @@ class ReservationTable(ft.UserControl):
         self.room_id = room_id
         self.editable = editable
         self.days_count = days_count
+        self.half_reservation = half_reservation
 
     def build(self):
         self.left_arrow = ft.IconButton(
@@ -183,6 +224,7 @@ class ReservationTable(ft.UserControl):
         for i in range(self.days_count):
             self.main_row.controls.append(
                 ReservationColumn(self.date_time, self.selected_fields, self.reservation_tile_click, self.room_id,
+                                  self.half_reservation,
                                   self.tile_width, self.tile_height)
             )
             self.date_time += timedelta(days=1)
@@ -206,6 +248,7 @@ class ReservationTable(ft.UserControl):
         self.main_row.controls.pop(2)
         self.main_row.controls.insert(-1, ReservationColumn(e.control.data, self.selected_fields,
                                                             self.reservation_tile_click, self.room_id,
+                                                            self.half_reservation,
                                                             self.tile_width, self.tile_height))
         self.right_arrow.data += timedelta(days=1)
         self.left_arrow.data += timedelta(days=1)
@@ -218,20 +261,45 @@ class ReservationTable(ft.UserControl):
         self.main_row.controls.pop(-2)
         self.main_row.controls.insert(2, ReservationColumn(e.control.data, self.selected_fields,
                                                            self.reservation_tile_click, self.room_id,
+                                                           self.half_reservation,
                                                            self.tile_width, self.tile_height))
         self.update()
         e.control.update()
 
     def reservation_tile_click(self, e):
         if self.editable:
-            if e.control.bgcolor != BOOKED_COLOR:
-                if e.control.bgcolor == SELECTED_COLOR:
-                    e.control.bgcolor = NONE_COLOR
-                    self.selected_fields.remove(e.control.data)
-                else:
-                    e.control.bgcolor = SELECTED_COLOR
+            if self.half_reservation:
+                if len(e.control.content.controls) == 0:
+                    e.control.content.controls.append(
+                        ReservationContainer(is_selected=True, half_reservation=True, tile_width=self.tile_width,
+                                             tile_height=self.tile_height))
                     self.selected_fields.append(e.control.data)
-                e.control.update()
+                elif len(e.control.content.controls) == 1:
+                    if e.control.content.controls[0].color == SELECTED_COLOR:
+                        e.control.content.controls.pop()
+                        self.selected_fields.remove(e.control.data)
+                    elif e.control.content.controls[0].color == BOOKED_COLOR:
+                        e.control.content.controls.append(
+                            ReservationContainer(is_selected=True, half_reservation=True, tile_width=self.tile_width,
+                                                 tile_height=self.tile_height))
+                        self.selected_fields.append(e.control.data)
+                elif len(e.control.content.controls) == 2:
+                    control_2 = e.control.content.controls[1]
+                    e.control.content.controls.pop()
+                    self.selected_fields.remove(e.control.data)
+            else:
+                if len(e.control.content.controls) == 0:
+                    e.control.content.controls.append(
+                        ReservationContainer(is_selected=True, half_reservation=False, tile_width=self.tile_width,
+                                             tile_height=self.tile_height))
+                    self.selected_fields.append(e.control.data)
+                elif len(e.control.content.controls) == 1:
+                    if e.control.content.controls[0].color == SELECTED_COLOR:
+                        e.control.content.controls.pop()
+                        self.selected_fields.remove(e.control.data)
+
+            e.control.update()
+            print(self.selected_fields)
 
     def reset(self, new_room_id: Optional[int] = None):
         if new_room_id:
@@ -245,6 +313,7 @@ class ReservationTable(ft.UserControl):
         for i in range(2, self.days_count + 2):
             self.main_row.controls[i] = ReservationColumn(self.date_time + timedelta(days=i - 2), self.selected_fields,
                                                           self.reservation_tile_click, self.room_id,
+                                                          self.half_reservation,
                                                           self.tile_width,
                                                           self.tile_height)
 

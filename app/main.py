@@ -47,4 +47,4 @@ def main(page: ft.Page):
         i.safe_update()
 
 
-ft.app(target=main, view=ft.AppView.WEB_BROWSER)
+ft.app(target=main)

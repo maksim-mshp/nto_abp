@@ -26,7 +26,7 @@ class Rooms:
         self.component.controls.append(self.room_selector)
 
         self.reservation_table = ReservationTable(
-            date_time=datetime.now(), room_id=rooms[0]['id'], tile_width=90, tile_height=27, days_count=7)
+            date_time=datetime.now(), room_id=rooms[0]['id'], tile_width=90, tile_height=27, days_count=7, half_reservation=False, editable=True)
         self.component.controls.append(self.reservation_table)
 
         self.hide()
