@@ -13,6 +13,8 @@ DEFAULT_BTN_STYLE = ft.ButtonStyle(
 
 on_page_change_func = None
 
+STORAGE = {}
+
 
 def object_as_dict(obj):
     return {
