@@ -4,6 +4,7 @@ from typing import Optional
 import flet as ft
 
 from services.reservation import reservation_service
+from utils import STORAGE
 
 SELECTED_COLOR = ft.colors.LIGHT_BLUE
 BOOKED_COLOR = ft.colors.GREY
@@ -98,7 +99,7 @@ class ReservationTile(ft.UserControl):
         if self.booked_fields:
             booked_date_time_list = [date_time['start_date_time'] for date_time in self.booked_fields]
             for field in self.booked_fields:
-                if field['start_date_time'] == self.date_time:
+                if field['start_date_time'] == self.date_time and field['reservation']['event_id'] != STORAGE.get('event_id', None):
                     if field['reservation']['half_reservation']:
                         row.controls.append(
                             ReservationContainer(is_booked=True, half_reservation=True, tile_width=self.tile_width,
@@ -189,7 +190,7 @@ class ReservationTable(ft.UserControl):
         self.tile_height = tile_height
         self.main_row = ft.Row(spacing=0, alignment=ft.alignment.top_center,
                                vertical_alignment=ft.CrossAxisAlignment.START)
-        self.selected_fields = []
+        self.selected_fields = STORAGE.get('selected_fields', [])
         self.room_id = room_id
         self.editable = editable
         self.days_count = days_count
@@ -297,7 +298,7 @@ class ReservationTable(ft.UserControl):
         self.left_arrow.data = self.start_date_time
         self.left_arrow.update()
 
-        self.selected_fields = []
+        self.selected_fields = STORAGE.get('selected_fields', [])
         self.date_time = self.start_date_time
         for i in range(2, self.days_count + 2):
             self.main_row.controls[i] = ReservationColumn(self.date_time + timedelta(days=i - 2), self.selected_fields,

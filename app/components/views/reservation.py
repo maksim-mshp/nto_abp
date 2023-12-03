@@ -4,6 +4,7 @@ import flet as ft
 import utils
 
 from components.tables.reservation_table import ReservationTable
+from services.reservation import reservation_service
 from utils import STORAGE, DEFAULT_BTN_STYLE
 
 
@@ -24,7 +25,7 @@ class Reservation:
 
         btn_row = ft.Row([
             ft.TextButton("Отмена",
-                          style=DEFAULT_BTN_STYLE, on_click=self.go_back_handler),
+                          style=DEFAULT_BTN_STYLE, on_click=self.cancel_handler),
             ft.TextButton("Ок",
                           style=DEFAULT_BTN_STYLE, on_click=self.save_handler)
         ], alignment=ft.MainAxisAlignment.CENTER,
@@ -58,11 +59,15 @@ class Reservation:
         self.page.title = self.VIEW_TITLE
         self.safe_update()
 
+    def cancel_handler(self, e):
+        STORAGE['selected_fields'] = []
+        self.go_back()
+
     @staticmethod
-    def go_back_handler(e=None):
+    def go_back():
         STORAGE['from_reservation'] = True
         utils.on_page_change_func(new_index=0)
 
     def save_handler(self, e=None):
         STORAGE['selected_fields'] = self.table.controls[0].selected_fields
-        self.go_back_handler()
+        self.go_back()

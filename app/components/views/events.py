@@ -1,8 +1,11 @@
 import flet as ft
+
+import utils
 from components.modals.event import EventModal
 from components.modals.event_type import EventTypeModal
 
 from services.event import event_service
+from services.reservation import reservation_service
 from utils import CATEGORIES, get_formatted_date, STORAGE
 
 

@@ -82,6 +82,7 @@ class ReservationService:
             'reservation': {
                 'room': i.reservation.room.name,
                 'event': i.reservation.event.title,
+                'event_id': i.reservation.event.id,
                 'half_reservation': i.reservation.half_reservation,
             }
         } for i in objects_on_date]
