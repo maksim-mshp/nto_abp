@@ -12,6 +12,7 @@ from utils import get_formatted_date, JOB_STATUSES
 class Jobs:
     VIEW_TITLE: str = "Заявки"
     VIEW_ICON = ft.icons.TASK_ALT
+    NAVBAR_HIDDEN: bool = False
 
     def __init__(self, page: ft.Page):
         self.page = page

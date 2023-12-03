@@ -11,6 +11,8 @@ DEFAULT_BTN_STYLE = ft.ButtonStyle(
     padding=15
 )
 
+on_page_change_func = None
+
 
 def object_as_dict(obj):
     return {

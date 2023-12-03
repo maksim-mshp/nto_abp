@@ -9,6 +9,7 @@ from utils import CATEGORIES, get_formatted_date
 class Events:
     VIEW_TITLE: str = "Мероприятия"
     VIEW_ICON = ft.icons.EVENT_ROUNDED
+    NAVBAR_HIDDEN: bool = False
 
     def __init__(self, page: ft.Page):
         self.page = page
@@ -46,8 +47,9 @@ class Events:
     def hide(self):
         self.component.visible = False
         self.create_btn.visible = False
+        if self.modal:
+            self.modal.close()
         self.modal = None
-        self.page.dialog = None
         self.safe_update()
         self.page.update()
 

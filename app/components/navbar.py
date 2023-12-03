@@ -15,7 +15,7 @@ class NavigationBar:
                 ft.NavigationRailDestination(
                     icon_content=ft.Icon(i.VIEW_ICON),
                     label=i.VIEW_TITLE,
-                ) for i in views
+                ) for i in filter(lambda x: not x.NAVBAR_HIDDEN, views)
             ],
             on_change=self.on_page_change,
         )

@@ -9,10 +9,10 @@ from components.tables.reservation_table import ReservationTable
 class Rooms:
     VIEW_TITLE: str = "Бронирование помещений"
     VIEW_ICON = ft.icons.MEETING_ROOM
+    NAVBAR_HIDDEN: bool = False
 
     def __init__(self, page: ft.Page):
         self.page = page
-        self.modal = None
         self.component = ft.Column(controls=[], expand=1)
 
         rooms = room_service.get_rooms_with_id()

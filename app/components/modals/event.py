@@ -7,7 +7,7 @@ import utils
 
 class EventModal:
 
-    def __init__(self, page: ft.Page, close_event, category=None, id=None):
+    def __init__(self, page: ft.Page, close_event, category=None, id=None, reset=False):
         self.page = page
         self.close_event = close_event
         self.category = category
@@ -51,14 +51,19 @@ class EventModal:
         self.date_btn = ft.ElevatedButton(self.get_btn_text(), on_click=self.open_datepicker,
                                           icon=ft.icons.EDIT_CALENDAR, style=self.normal_btn_style)
 
+        self.select_time_btn = ft.ElevatedButton('ОТРКЫТЬ ВЬЮШКУ', on_click=self.redirect_view,
+                                          icon=ft.icons.EDIT_CALENDAR)
+
         self.form = ft.Column(controls=[
             self.name,
             self.type,
             self.date_btn,
+            self.select_time_btn,
             ft.Container(expand=1, content=self.description),
         ], height=530, width=625, spacing=17)
 
-        self.reset()
+        if reset:
+            self.reset()
         self.date_btn.text = self.get_btn_text()
 
         self.dialog = ft.AlertDialog(
@@ -87,6 +92,10 @@ class EventModal:
             padding=15
         )))
 
+    def redirect_view(self, e=None):
+        # self.close()
+        utils.on_page_change_func(new_index=3)
+
     def reset(self):
         self.name.error_text = None
         self.type.error_text = None
@@ -110,8 +119,8 @@ class EventModal:
 
     def close(self):
         self.dialog.open = False
+        self.page.update()
         self.close_event()
-        self.reset()
 
     def open(self):
         self.dialog.open = True

@@ -1,11 +1,13 @@
-from utils import *
 from components.views.events import Events
 from components.views.jobs import Jobs
 from components.views.rooms import Rooms
+from components.views.reservation import Reservation
 from components.navbar import NavigationBar
 from core.database import add_sample_data
 from tendo import singleton
 from sys import exit
+import flet as ft
+import utils
 
 try:
     me = singleton.SingleInstance()
@@ -20,20 +22,24 @@ def main(page: ft.Page):
     page.window_maximized = True
     add_sample_data()
 
-    page_index = 2
-    views = [
-        Events(page),
-        Jobs(page),
-        Rooms(page)
-    ]
-
-    def on_page_change(e):
+    def on_page_change(e=None, new_index=None):
         nonlocal page_index
-        new_index = e.control.selected_index
+        if e is not None:
+            new_index = e.control.selected_index
         views[page_index].hide()
         views[new_index].show()
         page_index = new_index
         page.update()
+
+    utils.on_page_change_func = on_page_change
+
+    page_index = 2
+    views = [
+        Events(page),
+        Jobs(page),
+        Rooms(page),
+        Reservation(page)
+    ]
 
     nav = NavigationBar(page, views, on_page_change, page_index)
     views[page_index].show()
