@@ -13,20 +13,22 @@ class Reservation:
 
     def __init__(self, page: ft.Page):
         self.page = page
-        self.component = ft.Column(controls=[], expand=1, alignment=ft.MainAxisAlignment.START)
+        self.component = ft.Column(controls=[], expand=1, alignment=ft.MainAxisAlignment.CENTER)
         self.half_reservation = STORAGE.get('half_reservation', False)
         self.room_id = STORAGE.get('room_id', 1)
 
-        table = ReservationTable(
+        table = ft.Row([ReservationTable(
             date_time=datetime.now(), room_id=self.room_id, tile_width=90, tile_height=27, days_count=7,
-            half_reservation=self.half_reservation, editable=True)
+            half_reservation=self.half_reservation, editable=True)], alignment=ft.MainAxisAlignment.CENTER,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER)
 
         btn_row = ft.Row([
             ft.TextButton("Отмена",
                           style=DEFAULT_BTN_STYLE),
             ft.TextButton("Ок",
                           style=DEFAULT_BTN_STYLE)
-        ])
+        ], alignment=ft.MainAxisAlignment.CENTER,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER)
 
         self.component.controls.append(table)
 
