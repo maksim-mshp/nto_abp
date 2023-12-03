@@ -66,7 +66,6 @@ class ReservationContainer(ft.UserControl):
             self.color = BOOKED_COLOR
         elif self.is_selected:
             self.color = SELECTED_COLOR
-        print(self.color)
         return ft.Container(
             width=self.tile_width,
             height=self.tile_height,
@@ -101,19 +100,10 @@ class ReservationTile(ft.UserControl):
             for field in self.booked_fields:
                 if field['start_date_time'] == self.date_time:
                     if field['reservation']['half_reservation']:
-                        cnt = booked_date_time_list.count(self.date_time)
-                        if cnt == 1:
-                            row.controls.append(
-                                ReservationContainer(is_booked=True, half_reservation=True, tile_width=self.tile_width,
-                                                     tile_height=self.tile_height)
-                            )
-                        if cnt == 2:
-                            row.controls.append(
-                                ReservationContainer(is_booked=True, half_reservation=True, tile_width=self.tile_width,
-                                                     tile_height=self.tile_height),
-                                ReservationContainer(is_booked=True, half_reservation=True, tile_width=self.tile_width,
-                                                     tile_height=self.tile_height)
-                            )
+                        row.controls.append(
+                            ReservationContainer(is_booked=True, half_reservation=True, tile_width=self.tile_width,
+                                                 tile_height=self.tile_height)
+                        )
                     else:
                         row.controls.append(
                             ReservationContainer(is_booked=True, half_reservation=False, tile_width=self.tile_width,
@@ -284,9 +274,9 @@ class ReservationTable(ft.UserControl):
                                                  tile_height=self.tile_height))
                         self.selected_fields.append(e.control.data)
                 elif len(e.control.content.controls) == 2:
-                    control_2 = e.control.content.controls[1]
-                    e.control.content.controls.pop()
-                    self.selected_fields.remove(e.control.data)
+                    if e.control.content.controls[1].color == SELECTED_COLOR:
+                        e.control.content.controls.pop()
+                        self.selected_fields.remove(e.control.data)
             else:
                 if len(e.control.content.controls) == 0:
                     e.control.content.controls.append(

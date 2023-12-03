@@ -27,9 +27,9 @@ def example():
     # print(reservation_service.get_by_room_id(room_id=2))
     #
     # # create half
-    # start_date_time = datetime(2023, 11, 29, 8, 0, 0)
-    # datetimes_list = [start_date_time + timedelta(hours=i) for i in range(720)]
-    # reservation_service.create(room_id=1, event_id=1, intervals=datetimes_list, half_reservation=True)
+    start_date_time = datetime(2023, 11, 29, 8, 0, 0)
+    datetimes_list = [start_date_time + timedelta(hours=i) for i in range(720)]
+    reservation_service.create(room_id=1, event_id=1, intervals=datetimes_list, half_reservation=True)
 
     obj_as_list = reservation_service.get_time_intervals_by_date_and_room(datetime(2023, 12, 1), 1)
     print(obj_as_list)
