@@ -3,7 +3,7 @@ from components.modals.event import EventModal
 from components.modals.event_type import EventTypeModal
 
 from services.event import event_service
-from utils import CATEGORIES, get_formatted_date
+from utils import CATEGORIES, get_formatted_date, STORAGE
 
 
 class Events:
@@ -47,6 +47,9 @@ class Events:
         self.page.title = self.VIEW_TITLE
         self.safe_update()
         self.page.update()
+        if STORAGE.get('from_reservation', False):
+            self.add_clicked()
+            STORAGE['from_reservation'] = False
 
     def hide(self):
         self.component.visible = False
@@ -62,7 +65,7 @@ class Events:
         except AssertionError:
             pass
 
-    def add_clicked(self, e):
+    def add_clicked(self, e=None):
         self.page.dialog = self.modal.dialog
         self.modal.open()
         self.safe_update()

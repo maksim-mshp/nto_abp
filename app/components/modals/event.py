@@ -3,11 +3,12 @@ import flet as ft
 
 from services.event import event_service
 import utils
+from services.job import job_service
 
 
 class EventModal:
 
-    def __init__(self, page: ft.Page, close_event, category=None, id=None, reset=True):
+    def __init__(self, page: ft.Page, close_event, category=None, id=None):
         self.page = page
         self.close_event = close_event
         self.category = category
@@ -51,19 +52,25 @@ class EventModal:
         self.date_btn = ft.ElevatedButton(self.get_btn_text(), on_click=self.open_datepicker,
                                           icon=ft.icons.EDIT_CALENDAR, style=self.normal_btn_style)
 
-        self.select_time_btn = ft.ElevatedButton('ОТРКЫТЬ ВЬЮШКУ', on_click=self.redirect_view,
-                                          icon=ft.icons.EDIT_CALENDAR)
+        self.select_time_btn = ft.ElevatedButton('Бронирование помещения', on_click=self.redirect_view,
+                                                 icon=ft.icons.MEETING_ROOM, style=self.normal_btn_style)
+
+        self.room = ft.Dropdown(
+            options=[ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_rooms_with_id()],
+            label='Помещение',
+            on_change=self.on_room_change,
+            dense=True
+        )
 
         self.form = ft.Column(controls=[
             self.name,
             self.type,
             self.date_btn,
+            self.room,
             self.select_time_btn,
             ft.Container(expand=1, content=self.description),
         ], height=530, width=625, spacing=17)
 
-        if reset:
-            self.reset()
         self.date_btn.text = self.get_btn_text()
 
         self.dialog = ft.AlertDialog(
@@ -92,7 +99,11 @@ class EventModal:
             padding=15
         )))
 
-    def redirect_view(self, e=None):
+    def on_room_change(self, e=None):
+        utils.STORAGE['room_id'] = self.room.value
+
+    @staticmethod
+    def redirect_view(e=None):
         # self.close()
         utils.on_page_change_func(new_index=3)
 
@@ -123,6 +134,8 @@ class EventModal:
         self.close_event()
 
     def open(self):
+        if not utils.STORAGE.get('from_reservation', False):
+            self.reset()
         self.dialog.open = True
 
     def get_btn_text(self):

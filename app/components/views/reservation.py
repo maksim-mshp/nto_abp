@@ -8,7 +8,7 @@ from utils import STORAGE, DEFAULT_BTN_STYLE
 
 
 class Reservation:
-    VIEW_TITLE: str = "Бронирование"
+    VIEW_TITLE: str = "Бронирование помещения"
     NAVBAR_HIDDEN: bool = True
 
     def __init__(self, page: ft.Page):
@@ -17,18 +17,18 @@ class Reservation:
         self.half_reservation = STORAGE.get('half_reservation', False)
         self.room_id = STORAGE.get('room_id', 1)
 
-        table = ReservationTable(
+        self.table = ReservationTable(
             date_time=datetime.now(), room_id=self.room_id, tile_width=90, tile_height=27, days_count=7,
             half_reservation=self.half_reservation, editable=True)
 
         btn_row = ft.Row([
             ft.TextButton("Отмена",
-                          style=DEFAULT_BTN_STYLE),
+                          style=DEFAULT_BTN_STYLE, on_click=self.go_back_handler),
             ft.TextButton("Ок",
-                          style=DEFAULT_BTN_STYLE)
+                          style=DEFAULT_BTN_STYLE, on_click=self.save_handler)
         ])
 
-        self.component.controls.append(table)
+        self.component.controls.append(self.table)
 
         self.component.controls.append(btn_row)
 
@@ -57,4 +57,9 @@ class Reservation:
 
     @staticmethod
     def go_back_handler(e=None):
+        STORAGE['from_reservation'] = True
         utils.on_page_change_func(new_index=0)
+
+    def save_handler(self, e=None):
+        STORAGE['selected_fields'] = self.table.selected_fields
+        self.go_back_handler()
