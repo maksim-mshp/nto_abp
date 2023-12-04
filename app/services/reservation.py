@@ -32,6 +32,7 @@ class ReservationService:
         results = []
         for reservation in reservations:
             result = {
+                'reservation_id': reservation.id,
                 'room_id': reservation.room_id,
                 'event_id': reservation.event_id,
                 'intervals': [object_as_dict(interval) for interval in reservation.intervals],
@@ -42,6 +43,7 @@ class ReservationService:
     def get_by_event_id(self, event_id) -> dict:
         reservation = self.reservation_repository.get_list_items_by_filter(event_id=event_id)[0]
         return {
+            'reservation_id': reservation.id,
             'room_id': reservation.room_id,
             'event_id': reservation.event_id,
             'intervals': [object_as_dict(interval) for interval in reservation.intervals],

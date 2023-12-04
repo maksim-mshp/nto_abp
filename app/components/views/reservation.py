@@ -50,12 +50,10 @@ class Reservation:
             pass
 
     def hide(self):
-        print(utils.STORAGE)
         self.component.visible = False
         self.safe_update()
 
     def show(self):
-        print(utils.STORAGE)
         self.table.controls[0].reset(STORAGE['room_id'])
         self.component.visible = True
         self.page.title = self.VIEW_TITLE
@@ -70,6 +68,5 @@ class Reservation:
         utils.on_page_change_func(new_index=0)
 
     def save_handler(self, e=None):
-        print(utils.STORAGE)
         STORAGE['selected_fields'] = self.table.controls[0].selected_fields.copy()
         self.go_back()

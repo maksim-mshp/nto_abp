@@ -10,6 +10,7 @@ from services.reservation import reservation_service
 class EventModal:
 
     def __init__(self, page: ft.Page, close_event, category=None, id=None):
+        self.reservation_id = None
         self.page = page
         self.close_event = close_event
         self.category = category
@@ -105,7 +106,6 @@ class EventModal:
         self.select_time_btn.update()
 
     def redirect_view(self, e=None):
-        print(utils.STORAGE)
         utils.STORAGE['room_id'] = self.room.value
         utils.STORAGE['event_id'] = self.id
         self.close(clear=False)
@@ -125,12 +125,14 @@ class EventModal:
             self.description.value = ''
         else:
             event = event_service.get_event_by_id(self.id)
+            reservation = reservation_service.get_by_event_id(self.id)
             self.category = event['category']
             self.name.value = event['title']
-            self.room.value = reservation_service.get_by_event_id(self.id)['room_id']
+            self.room.value = reservation['room_id']
             self.type.value = event_service.get_event_type_by_id(event['event_type_id'])
             self.date.value = event['date']
             self.description.value = event['description']
+            self.reservation_id = reservation['reservation_id']
 
         self.date_btn.text = self.get_btn_text()
 
@@ -149,7 +151,6 @@ class EventModal:
             utils.STORAGE['from_reservation'] = False
 
     def open(self):
-        print(utils.STORAGE)
         if not utils.STORAGE.get('from_reservation', False):
             self.reset()
         self.dialog.open = True
@@ -216,5 +217,12 @@ class EventModal:
         else:
             event_service.update_event(self.id, self.name.value.strip(), self.date.value, self.type.value,
                                        self.description.value.strip(), self.category)
+
+            reservation_service.update_by_id(
+                self.reservation_id,
+                self.room.value,
+                self.id,
+                utils.STORAGE['selected_fields']
+            )
 
         self.close()
