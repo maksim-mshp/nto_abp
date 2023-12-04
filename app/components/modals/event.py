@@ -195,14 +195,22 @@ class EventModal:
         self.room.options = [ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_rooms_with_id()]
         self.type.visible = self.category != utils.CATEGORIES[2]
 
-        if utils.STORAGE.get('from_reservation', False):
-            if len(utils.STORAGE.get('selected_fields', [])) > 0:
-                self.select_time_btn.style = self.normal_btn_style
-
-            self.room.value = utils.STORAGE.get('room_id', None)
-
-        else:
+        if len(utils.STORAGE.get('selected_fields', [])) == 0 and self.id is not None:
+            reservation = reservation_service.get_by_event_id(self.id)
+            utils.STORAGE['selected_fields'] = [i['start_date_time'] for i in
+                                                reservation['intervals']
+                                                ]
+            utils.STORAGE['half_reservation'] = reservation['half_reservation']
             self.reset()
+        else:
+            if utils.STORAGE.get('from_reservation', False):
+                if len(utils.STORAGE.get('selected_fields', [])) > 0:
+                    self.select_time_btn.style = self.normal_btn_style
+
+                self.room.value = utils.STORAGE.get('room_id', None)
+
+            else:
+                self.reset()
         self.dialog.open = True
 
     def get_btn_text(self):
