@@ -117,7 +117,7 @@ class EventModal:
         self.half_reservation.visible = room_service.get_room_by_id(self.room.value)['half_reservation']
         self.half_reservation.value = False
         self.select_time_btn.disabled = False
-        self.form.update()
+        self.page.update()
 
     def redirect_view(self, e=None):
         utils.STORAGE['room_id'] = int(self.room.value)
@@ -226,7 +226,7 @@ class EventModal:
             self.date_btn.style = self.normal_btn_style
 
         self.date_btn.text = self.get_btn_text()
-        self.dialog.update()
+        self.page.update()
 
     def on_name_change(self, e):
         if self.name.value.strip() != '':

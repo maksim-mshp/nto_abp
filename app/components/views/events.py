@@ -117,8 +117,9 @@ class Events:
         self.modal_edit.id = id
         self.modal_edit.build()
         self.page.dialog = self.modal_edit.dialog
-        self.modal_edit.open()
         self.safe_update()
+        self.page.update()
+        self.modal_edit.open()
         self.page.update()
 
     def safe_remove(self, obj):
