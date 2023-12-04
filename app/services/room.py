@@ -19,7 +19,7 @@ class RoomService:
         filt = {}
         if name:
             filt['name'] = name
-        if half_reservation:
+        if half_reservation is not None:
             filt['half_reservation'] = half_reservation
 
         job_room = self.room_repository.update_by_id(room_id, **filt)

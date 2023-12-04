@@ -54,7 +54,7 @@ class Reservation:
         self.safe_update()
 
     def show(self):
-        self.table.controls[0].reset(STORAGE['room_id'])
+        self.table.controls[0].reset(STORAGE['room_id'], STORAGE['half_reservation'])
         self.component.visible = True
         self.page.title = self.VIEW_TITLE
         self.safe_update()

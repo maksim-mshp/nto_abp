@@ -5,6 +5,7 @@ from services.event import event_service
 import utils
 from services.job import job_service
 from services.reservation import reservation_service
+from services.room import room_service
 
 
 class EventModal:
@@ -65,11 +66,14 @@ class EventModal:
             dense=True
         )
 
+        self.half_reservation = ft.Checkbox(label='Бронь половины помещения', visible=False)
+
         self.form = ft.Column(controls=[
             self.name,
             self.type,
             self.date_btn,
             self.room,
+            self.half_reservation,
             self.select_time_btn,
             ft.Container(expand=1, content=self.description),
         ], height=530, width=625, spacing=17)
@@ -102,11 +106,14 @@ class EventModal:
 
     def on_room_change(self, e=None):
         utils.STORAGE['room_id'] = self.room.value
+        self.half_reservation.visible = room_service.get_room_by_id(self.room.value)['half_reservation']
+        self.half_reservation.value = False
         self.select_time_btn.disabled = False
-        self.select_time_btn.update()
+        self.form.update()
 
     def redirect_view(self, e=None):
         utils.STORAGE['room_id'] = self.room.value
+        utils.STORAGE['half_reservation'] = self.half_reservation.value
         utils.STORAGE['event_id'] = self.id
         self.close(clear=False)
         utils.on_page_change_func(new_index=3)
@@ -212,7 +219,8 @@ class EventModal:
             reservation_service.create(
                 self.room.value,
                 res['id'],
-                utils.STORAGE['selected_fields']
+                utils.STORAGE['selected_fields'],
+                utils.STORAGE['half_reservation'],
             )
         else:
             event_service.update_event(self.id, self.name.value.strip(), self.date.value, self.type.value,
@@ -222,7 +230,8 @@ class EventModal:
                 self.reservation_id,
                 self.room.value,
                 self.id,
-                utils.STORAGE['selected_fields']
+                utils.STORAGE['selected_fields'],
+                utils.STORAGE['half_reservation'],
             )
 
         self.close()

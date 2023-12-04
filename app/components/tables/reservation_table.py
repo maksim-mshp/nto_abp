@@ -305,9 +305,11 @@ class ReservationTable(ft.UserControl):
 
             e.control.update()
 
-    def reset(self, new_room_id: Optional[int] = None):
+    def reset(self, new_room_id: Optional[int] = None, half_reservation: bool = None):
         if new_room_id:
             self.room_id = new_room_id
+        if half_reservation is not None:
+            self.half_reservation = half_reservation
 
         self.left_arrow.data = self.start_date_time
         self.left_arrow.update()
