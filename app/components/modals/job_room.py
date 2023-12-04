@@ -1,6 +1,7 @@
 import flet as ft
 from services.job import job_service
 from components.modals.manage import ManageModal
+from utils import STORAGE
 
 
 class JobRoomModal(ManageModal):
@@ -8,6 +9,7 @@ class JobRoomModal(ManageModal):
         super().__init__(page, close_event)
         self.title = 'Управление помещениями'
         self.objects = job_service.get_jobs_rooms_with_id()
+        STORAGE['job_room_modal_checkbox'] = True
         super().init()
 
     @staticmethod

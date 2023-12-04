@@ -1,6 +1,6 @@
 import flet as ft
-
 import utils
+from services.room import room_service
 
 
 class Object:
@@ -45,6 +45,16 @@ class Object:
             ],
         )
 
+        self.half_reservation = None
+
+        if utils.STORAGE.get('job_room_modal_checkbox', False):
+            self.half_reservation = ft.Checkbox(on_change=self.half_reservation_change)
+            self.display_view.controls[1].controls.insert(0, ft.Tooltip(
+                content=self.half_reservation, message='Возможно бронирование половины помещения'))
+
+            if self.id:
+                self.half_reservation.value = room_service.get_room_by_id(self.id)['half_reservation']
+
         self.input = ft.TextField(expand=1, value=self.text, on_focus=self._on_focus_input, dense=True)
 
         self.edit_view = ft.Row(
@@ -62,6 +72,9 @@ class Object:
         )
 
         self.component = ft.Column(controls=[self.display_view, self.edit_view], data=self.id)
+
+    def half_reservation_change(self, e):
+        room_service.update_room(self.id, half_reservation=self.half_reservation.value)
 
     def _on_focus_input(self, e=None):
         if self.error:
@@ -167,4 +180,5 @@ class ManageModal:
 
     def close(self, e=None):
         self.dialog.open = False
+        utils.STORAGE.pop('job_room_modal_checkbox', -1)
         self.close_event()

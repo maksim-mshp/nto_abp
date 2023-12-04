@@ -16,6 +16,8 @@ class Events:
     NAVBAR_HIDDEN: bool = False
 
     def __init__(self, page: ft.Page):
+        self.modal_rooms = None
+        self.modal_event_type = None
         self.page = page
         self.modal_edit = None
         self.dt = None
@@ -88,16 +90,18 @@ class Events:
         self.page.update()
 
     def manage_types_clicked(self, e):
-        self.modal = EventTypeModal(self.page, close_event=self.on_change)
-        self.page.dialog = self.modal.dialog
-        self.modal.open()
+        """открывает модалку управление видами"""
+        self.modal_event_type = EventTypeModal(self.page, close_event=self.on_change)
+        self.page.dialog = self.modal_event_type.dialog
+        self.modal_event_type.open()
         self.safe_update()
         self.page.update()
 
     def manage_rooms_clicked(self, e):
-        self.modal = JobRoomModal(self.page, close_event=self.on_change)
-        self.page.dialog = self.modal.dialog
-        self.modal.open()
+        """открывает модалку управление помещениями"""
+        self.modal_rooms = JobRoomModal(self.page, close_event=self.on_change)
+        self.page.dialog = self.modal_rooms.dialog
+        self.modal_rooms.open()
         self.safe_update()
         self.page.update()
 
