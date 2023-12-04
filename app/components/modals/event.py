@@ -122,6 +122,7 @@ class EventModal:
         self.name.error_text = None
         self.type.error_text = None
         self.date_btn.style = self.normal_btn_style
+        self.select_time_btn.style = self.normal_btn_style
         self.select_time_btn.disabled = not self.id
 
         if self.id is None:
@@ -158,7 +159,10 @@ class EventModal:
             utils.STORAGE['from_reservation'] = False
 
     def open(self):
-        if not utils.STORAGE.get('from_reservation', False):
+        if utils.STORAGE.get('from_reservation', False):
+            if len(utils.STORAGE.get('selected_fields', [])) > 0:
+                self.select_time_btn.style = self.normal_btn_style
+        else:
             self.reset()
         self.dialog.open = True
 
@@ -207,6 +211,10 @@ class EventModal:
 
         if self.date.value is None:
             self.date_btn.style = self.err_btn_style
+            err = True
+
+        if len(utils.STORAGE.get('selected_fields', [])) == 0:
+            self.select_time_btn.style = self.err_btn_style
             err = True
 
         if err:

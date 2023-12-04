@@ -85,6 +85,7 @@ class Events:
     def add_clicked(self, e=None):
         """открывает модалку создания"""
         self.page.dialog = self.modal.dialog
+        self.modal.category = CATEGORIES[self.tabs.selected_index]
         self.modal.open()
         self.safe_update()
         self.page.update()
