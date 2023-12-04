@@ -51,6 +51,7 @@ class DateTile(ft.UserControl):
 
 class ReservationContainer(ft.UserControl):
     def __init__(self, is_booked: bool = False, is_selected: bool = False, half_reservation: bool = False,
+                 message: str = " ",
                  tile_width: int = 100, tile_height: int = 20):
         super().__init__()
         self.is_booked = is_booked
@@ -61,10 +62,20 @@ class ReservationContainer(ft.UserControl):
             self.tile_width //= 2
         self.tile_height = tile_height
         self.color = NONE_COLOR
+        self.message = message
 
     def build(self):
         if self.is_booked:
             self.color = BOOKED_COLOR
+            return ft.Tooltip(
+                message=self.message,
+                vertical_offset=20,
+                content=ft.Container(
+                    width=self.tile_width,
+                    height=self.tile_height,
+                    bgcolor=self.color,
+                )
+            )
         elif self.is_selected:
             self.color = SELECTED_COLOR
         return ft.Container(
@@ -97,17 +108,20 @@ class ReservationTile(ft.UserControl):
         )
         row = ft.Row(spacing=0)
         if self.booked_fields:
-            booked_date_time_list = [date_time['start_date_time'] for date_time in self.booked_fields]
             for field in self.booked_fields:
-                if field['start_date_time'] == self.date_time and field['reservation']['event_id'] != STORAGE.get('event_id', None):
+                if field['start_date_time'] == self.date_time and field['reservation']['event_id'] != STORAGE.get(
+                        'event_id', None):
+                    message = field['reservation']['event']
                     if field['reservation']['half_reservation']:
                         row.controls.append(
-                            ReservationContainer(is_booked=True, half_reservation=True, tile_width=self.tile_width,
+                            ReservationContainer(is_booked=True, half_reservation=True, message=message,
+                                                 tile_width=self.tile_width,
                                                  tile_height=self.tile_height)
                         )
                     else:
                         row.controls.append(
-                            ReservationContainer(is_booked=True, half_reservation=False, tile_width=self.tile_width,
+                            ReservationContainer(is_booked=True, half_reservation=False, message=message,
+                                                 tile_width=self.tile_width,
                                                  tile_height=self.tile_height)
                         )
         if self.date_time in self.selected_fields:
