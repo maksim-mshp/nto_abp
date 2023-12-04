@@ -70,9 +70,8 @@ class Events:
         if STORAGE.get('event_id', None):
             self.open_modal(id=STORAGE['event_id'])
             STORAGE['event_id'] = None
-            return
-
-        self.add_clicked()
+        else:
+            self.add_clicked()
 
     def hide(self):
         self.component.visible = False
@@ -116,6 +115,7 @@ class Events:
         if e:
             id = e.control.data
         self.modal_edit.id = id
+        self.modal_edit.build()
         self.page.dialog = self.modal_edit.dialog
         self.modal_edit.open()
         self.safe_update()

@@ -35,6 +35,7 @@ class ReservationService:
                 'reservation_id': reservation.id,
                 'room_id': reservation.room_id,
                 'event_id': reservation.event_id,
+                'half_reservation': reservation.half_reservation,
                 'intervals': [object_as_dict(interval) for interval in reservation.intervals],
             }
             results.append(result)
@@ -46,6 +47,7 @@ class ReservationService:
             'reservation_id': reservation.id,
             'room_id': reservation.room_id,
             'event_id': reservation.event_id,
+            'half_reservation': reservation.half_reservation,
             'intervals': [object_as_dict(interval) for interval in reservation.intervals],
         }
 

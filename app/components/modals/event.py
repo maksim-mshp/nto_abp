@@ -11,6 +11,7 @@ from services.room import room_service
 class EventModal:
 
     def __init__(self, page: ft.Page, close_event, category=None, id=None):
+        self.dialog = None
         self.reservation_id = None
         self.page = page
         self.close_event = close_event
@@ -78,6 +79,12 @@ class EventModal:
             ft.Container(expand=1, content=self.description),
         ], height=530, width=625, spacing=17)
 
+        self.build()
+
+        self.started_room_id = None
+        self.started_half_reservation = None
+
+    def build(self):
         self.dialog = ft.AlertDialog(
             title=ft.Text("Создание мероприятия" if self.id is None else 'Редактирование мероприятия'),
             content=self.form,
@@ -104,8 +111,6 @@ class EventModal:
             padding=15
         )))
 
-        self.started_room_id = None
-
     def on_room_change(self, e=None):
         utils.STORAGE['selected_fields'] = []
         utils.STORAGE['room_id'] = int(self.room.value)
@@ -122,7 +127,7 @@ class EventModal:
         def prepare_storage():
             if not self.id:
                 return
-            if self.started_room_id != self.room.value:
+            if self.started_room_id != self.room.value or self.started_half_reservation != self.half_reservation.value:
                 utils.STORAGE['selected_fields'] = []
                 return
             if len(utils.STORAGE.get('selected_fields', [])) > 0:
@@ -151,6 +156,8 @@ class EventModal:
             self.room.value = None
             self.description.value = ''
             self.started_room_id = None
+            self.started_half_reservation = None
+            self.half_reservation.value = None
         else:
             event = event_service.get_event_by_id(self.id)
             reservation = reservation_service.get_by_event_id(self.id)
@@ -163,6 +170,10 @@ class EventModal:
             self.reservation_id = reservation['reservation_id']
 
             self.started_room_id = reservation['room_id']
+            self.started_half_reservation = reservation['half_reservation']
+            self.half_reservation.value = reservation['half_reservation']
+
+            self.half_reservation.visible = room_service.get_room_by_id(self.room.value)['half_reservation']
 
         self.date_btn.text = self.get_btn_text()
 
