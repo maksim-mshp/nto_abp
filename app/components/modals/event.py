@@ -166,8 +166,7 @@ class EventModal:
 
         self.date_btn.text = self.get_btn_text()
 
-        if self.category == utils.CATEGORIES[2]:
-            self.type.visible = False
+        self.type.visible = self.category != utils.CATEGORIES[2]
 
     def close(self, clear=True):
         self.dialog.open = False
@@ -183,6 +182,8 @@ class EventModal:
     def open(self):
         self.type.options = [ft.dropdown.Option(i) for i in event_service.get_events_types()]
         self.room.options = [ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_rooms_with_id()]
+        self.type.visible = self.category != utils.CATEGORIES[2]
+
         if utils.STORAGE.get('from_reservation', False):
             if len(utils.STORAGE.get('selected_fields', [])) > 0:
                 self.select_time_btn.style = self.normal_btn_style
