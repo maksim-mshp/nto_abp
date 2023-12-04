@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
@@ -38,6 +38,8 @@ def drop_database():
 
 
 def add_sample_data():
+    from services.reservation import reservation_service
+
     if os.path.exists(config.PROJECT_ROOT + '/' + config.DATABASE_NAME):
         create_database()
         return
@@ -51,25 +53,25 @@ def add_sample_data():
             EventType(name='Выставка'),
             EventType(name='Мастер-класс'),
             Event(title='Выставка «Архитектура и мода. В потоке времени»',
-                  description='Очень крутое событие приходите!!!', date=datetime(2023, 11, 18), category=CATEGORIES[1],
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 14), category=CATEGORIES[1],
                   event_type_id=4),
             Event(title='Мастер-классы по эстрадному вокалу «Мне нужно петь» в ноябре',
-                  description='Очень крутое событие приходите!!!', date=datetime(2023, 11, 25), category=CATEGORIES[2],
-                  event_type_id=5),
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 7), category=CATEGORIES[2],
+                  event_type_id=None),
             Event(title='Спектакль-концерт в рамках проекта «П» в кубе: «Неделя просвещения»',
-                  description='Очень крутое событие приходите!!!', date=datetime(2023, 11, 19), category=CATEGORIES[1],
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 5), category=CATEGORIES[1],
                   event_type_id=5),
+            Event(title='Выставка «Под занавесом. Мировые звезды — в объективе легендарного фотографа «Известий» Сергея Смирнова»',
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 14), category=CATEGORIES[1],
+                  event_type_id=4),
             JobType(name='Уборка'),
             JobType(name='Установка экспонатов'),
             JobType(name='Настройка оборудования'),
             JobType(name='Настройка освещения'),
             Room(name='Концертный зал'),
-            Room(name='Выставочный зал'),
+            Room(name='Выставочный зал', half_reservation=True),
             Room(name='Театральная сцена'),
-            Room(name='Звукозаписывающая студия'),
-            Reservation(room_id=3, event_id=3),
-            Reservation(room_id=4, event_id=2),
-            Reservation(room_id=2, event_id=1),
+            Room(name='Звукозаписывающая студия', half_reservation=True),
             Job(title='Подготовка и установка экспонатов в выставочном зале', description='', event_id=1, job_type_id=2,
                 job_room_id=2, registration_date=datetime.now(), deadline=datetime(2023, 11, 29),
                 status=JOB_STATUSES[0]),
@@ -86,4 +88,26 @@ def add_sample_data():
             Job(title='Уборка концертного зала', description='', event_id=3, job_type_id=1, job_room_id=1,
                 registration_date=datetime.now(), deadline=datetime(2023, 11, 27), status=JOB_STATUSES[2])
         ])
+        datetimes_list = []
+        start_date_time = datetime(2023, 12, 10, 9, 0, 0)
+        datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(9)])
+        start_date_time = datetime(2023, 12, 11, 9, 0, 0)
+        datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(9)])
+        start_date_time = datetime(2023, 12, 12, 9, 0, 0)
+        datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(9)])
+        reservation_service.create(room_id=2, event_id=4, intervals=datetimes_list, half_reservation=True)
+        reservation_service.create(room_id=2, event_id=1, intervals=datetimes_list, half_reservation=True)
+
+        datetimes_list = []
+
+        start_date_time = datetime(2023, 12, 10, 9, 0, 0)
+        datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(5)])
+        reservation_service.create(room_id=4, event_id=2, intervals=datetimes_list, half_reservation=True)
+
+        datetimes_list = []
+
+        start_date_time = datetime(2023, 12, 10, 9, 0, 0)
+        datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(5)])
+        reservation_service.create(room_id=3, event_id=3, intervals=datetimes_list, half_reservation=False)
+
         session.commit()
