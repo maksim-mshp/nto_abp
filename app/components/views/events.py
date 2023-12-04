@@ -19,7 +19,6 @@ class Events:
         self.modal_rooms = None
         self.modal_event_type = None
         self.page = page
-        self.modal_edit = None
         self.dt = None
         self.component = ft.Column(controls=[], expand=1)
         self.nothing = ft.Container(ft.Text("Ничего не найдено"), width=100000, padding=50,
@@ -34,6 +33,8 @@ class Events:
         self.modal = EventModal(self.page,
                                 close_event=self.on_change,
                                 category=CATEGORIES[self.tabs.selected_index])
+
+        self.modal_edit = EventModal(self.page, close_event=self.on_change)
 
         self.create_btn = ft.FloatingActionButton(icon=ft.icons.ADD, on_click=self.add_clicked)
         self.page.add(self.create_btn)
@@ -62,12 +63,16 @@ class Events:
         self.page.title = self.VIEW_TITLE
         self.safe_update()
         self.page.update()
-        if STORAGE.get('from_reservation', False):
-            self.add_clicked()
-            STORAGE['from_reservation'] = False
-        if STORAGE.get('event_id', None) is not None:
+
+        if not STORAGE.get('from_reservation', False):
+            return
+
+        if STORAGE.get('event_id', None):
             self.open_modal(id=STORAGE['event_id'])
             STORAGE['event_id'] = None
+            return
+
+        self.add_clicked()
 
     def hide(self):
         self.component.visible = False
@@ -110,7 +115,7 @@ class Events:
         """открывает модалку редактирования"""
         if e:
             id = e.control.data
-        self.modal_edit = EventModal(self.page, close_event=self.on_change, id=id)
+        self.modal_edit.id = id
         self.page.dialog = self.modal_edit.dialog
         self.modal_edit.open()
         self.safe_update()

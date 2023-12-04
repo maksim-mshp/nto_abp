@@ -1,6 +1,7 @@
 import flet as ft
 from services.job import job_service
 from components.modals.manage import ManageModal
+from services.reservation import reservation_service
 from utils import STORAGE
 
 
@@ -14,7 +15,7 @@ class JobRoomModal(ManageModal):
 
     @staticmethod
     def check_is_using(id: int) -> bool:
-        return job_service.is_job_room_using(id)
+        return job_service.is_job_room_using(id) or len(reservation_service.get_by_room_id(id)) > 0
 
     @staticmethod
     def create(title: str) -> dict:

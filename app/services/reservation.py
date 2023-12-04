@@ -69,9 +69,10 @@ class ReservationService:
         if not half_reservation:
             half_reservation = old_reservation.half_reservation
         if not intervals:
-            intervals = []
-            for interval in old_reservation.intervals:
-                intervals.append(object_as_dict(interval)['start_date_time'])
+            intervals = [
+                object_as_dict(interval)['start_date_time']
+                for interval in old_reservation.intervals
+            ]
 
         self.delete_by_id(reservation_id)
         reservation = self.create(room_id, event_id, intervals, half_reservation)

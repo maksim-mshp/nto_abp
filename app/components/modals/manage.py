@@ -1,5 +1,6 @@
 import flet as ft
 import utils
+from services.reservation import reservation_service
 from services.room import room_service
 
 
@@ -54,6 +55,9 @@ class Object:
 
             if self.id:
                 self.half_reservation.value = room_service.get_room_by_id(self.id)['half_reservation']
+                if len(reservation_service.get_by_room_id(self.id)) > 0:
+                    self.half_reservation.disabled = True
+                    self.half_reservation.tooltip = 'Невозможно изменить, т.к. объект используется'
 
         self.input = ft.TextField(expand=1, value=self.text, on_focus=self._on_focus_input, dense=True)
 

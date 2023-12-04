@@ -49,6 +49,7 @@ class Rooms:
         self.safe_update()
 
     def show(self):
+        self.reservation_table.reset()
         self.component.visible = True
         self.page.title = self.VIEW_TITLE
         self.safe_update()
