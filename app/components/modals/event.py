@@ -105,9 +105,10 @@ class EventModal:
         self.select_time_btn.update()
 
     def redirect_view(self, e=None):
+        print(utils.STORAGE)
         utils.STORAGE['room_id'] = self.room.value
         utils.STORAGE['event_id'] = self.id
-        self.close()
+        self.close(clear=False)
         utils.on_page_change_func(new_index=3)
 
     def reset(self):
@@ -136,12 +137,19 @@ class EventModal:
         if self.category == utils.CATEGORIES[2]:
             self.type.visible = False
 
-    def close(self):
+    def close(self, clear=True):
         self.dialog.open = False
         self.page.update()
         self.close_event()
 
+        if clear:
+            utils.STORAGE['selected_fields'] = []
+            utils.STORAGE['room_id'] = None
+            utils.STORAGE['event_id'] = None
+            utils.STORAGE['from_reservation'] = False
+
     def open(self):
+        print(utils.STORAGE)
         if not utils.STORAGE.get('from_reservation', False):
             self.reset()
         self.dialog.open = True
@@ -205,10 +213,6 @@ class EventModal:
                 res['id'],
                 utils.STORAGE['selected_fields']
             )
-            utils.STORAGE['selected_fields'].clear()
-            utils.STORAGE['room_id'] = None
-            utils.STORAGE['event_id'] = None
-            utils.STORAGE['from_reservation'] = False
         else:
             event_service.update_event(self.id, self.name.value.strip(), self.date.value, self.type.value,
                                        self.description.value.strip(), self.category)

@@ -190,7 +190,7 @@ class ReservationTable(ft.UserControl):
         self.tile_height = tile_height
         self.main_row = ft.Row(spacing=0, alignment=ft.alignment.top_center,
                                vertical_alignment=ft.CrossAxisAlignment.START)
-        self.selected_fields = STORAGE.get('selected_fields', [])
+        self.selected_fields = STORAGE.get('selected_fields', []).copy()
         self.room_id = room_id
         self.editable = editable
         self.days_count = days_count
@@ -298,7 +298,7 @@ class ReservationTable(ft.UserControl):
         self.left_arrow.data = self.start_date_time
         self.left_arrow.update()
 
-        self.selected_fields = STORAGE.get('selected_fields', [])
+        self.selected_fields = STORAGE.get('selected_fields', []).copy()
         self.date_time = self.start_date_time
         for i in range(2, self.days_count + 2):
             self.main_row.controls[i] = ReservationColumn(self.date_time + timedelta(days=i - 2), self.selected_fields,

@@ -60,8 +60,7 @@ class Events:
     def hide(self):
         self.component.visible = False
         self.create_btn.visible = False
-        if self.modal:
-            self.modal.close()
+        self.modal.dialog.open = False
         self.safe_update()
         self.page.update()
 
