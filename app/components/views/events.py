@@ -3,6 +3,7 @@ import flet as ft
 import utils
 from components.modals.event import EventModal
 from components.modals.event_type import EventTypeModal
+from components.modals.job_room import JobRoomModal
 
 from services.event import event_service
 from services.reservation import reservation_service
@@ -34,13 +35,22 @@ class Events:
 
         self.create_btn = ft.FloatingActionButton(icon=ft.icons.ADD, on_click=self.add_clicked)
         self.page.add(self.create_btn)
-        self.component.controls.append(ft.Row(
-            [self.tabs, ft.ElevatedButton('Управление видами мероприятий', style=ft.ButtonStyle(
-                shape=ft.RoundedRectangleBorder(radius=10),
-                padding=17
-            ), on_click=self.manage_types_clicked)],
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+
+        header_btn_style = ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=10),
+            padding=17
+        )
+
+        self.component.controls.append(ft.Row([
+            self.tabs,
+            ft.Row([
+                ft.ElevatedButton('Управление видами мероприятий', style=header_btn_style,
+                                  on_click=self.manage_types_clicked),
+                ft.ElevatedButton('Управление помещениями', style=header_btn_style,
+                                  on_click=self.manage_rooms_clicked)])
+        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         ))
+
         self.on_change()
         self.hide()
 
@@ -79,6 +89,13 @@ class Events:
 
     def manage_types_clicked(self, e):
         self.modal = EventTypeModal(self.page, close_event=self.on_change)
+        self.page.dialog = self.modal.dialog
+        self.modal.open()
+        self.safe_update()
+        self.page.update()
+
+    def manage_rooms_clicked(self, e):
+        self.modal = JobRoomModal(self.page, close_event=self.on_change)
         self.page.dialog = self.modal.dialog
         self.modal.open()
         self.safe_update()
