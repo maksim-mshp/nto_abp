@@ -18,7 +18,7 @@ class JobModal:
         self.id = id
 
         self.event = ft.Dropdown(
-            options=[ft.dropdown.Option(i['id'], truncate_text(i['title'], 67)) for i in event_service.get_events()],
+            options=[ft.dropdown.Option(i['id'], truncate_text(i['title'], 63)) for i in event_service.get_events()],
             label='Мероприятие',
             on_change=self.on_event_change,
             dense=True
