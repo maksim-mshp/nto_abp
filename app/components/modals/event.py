@@ -312,4 +312,5 @@ class EventModal:
                     utils.STORAGE['half_reservation'],
                 )
 
+        self.was_redirected = False
         self.close()
