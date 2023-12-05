@@ -67,7 +67,8 @@ class EventModal:
             dense=True
         )
 
-        self.half_reservation = ft.Checkbox(label='Бронь половины помещения', visible=False)
+        self.half_reservation = ft.Checkbox(label='Бронь половины помещения', visible=False,
+                                            on_change=self.half_reservation_change)
 
         self.form = ft.Column(controls=[
             self.name,
@@ -83,6 +84,7 @@ class EventModal:
 
         self.started_room_id = None
         self.started_half_reservation = None
+        self.was_redirected = False
 
     def build(self):
         self.dialog = ft.AlertDialog(
@@ -117,7 +119,11 @@ class EventModal:
         self.half_reservation.visible = room_service.get_room_by_id(self.room.value)['half_reservation']
         self.half_reservation.value = False
         self.select_time_btn.disabled = False
+        self.was_redirected = False
         self.page.update()
+
+    def half_reservation_change(self, e):
+        self.was_redirected = False
 
     def redirect_view(self, e=None):
         utils.STORAGE['room_id'] = int(self.room.value)
@@ -132,6 +138,8 @@ class EventModal:
                 return
             if len(utils.STORAGE.get('selected_fields', [])) > 0:
                 return
+            if self.was_redirected:
+                return
 
             utils.STORAGE['selected_fields'] = [
                 i['start_date_time']
@@ -140,6 +148,7 @@ class EventModal:
 
         prepare_storage()
         self.close(clear=False)
+        self.was_redirected = True
         utils.on_page_change_func(new_index=3)
 
     def reset(self):
@@ -195,7 +204,11 @@ class EventModal:
         self.room.options = [ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_rooms_with_id()]
         self.type.visible = self.category != utils.CATEGORIES[2]
 
-        if len(utils.STORAGE.get('selected_fields', [])) == 0 and self.id is not None:
+        if utils.STORAGE.get('from_reservation', False):
+            if len(utils.STORAGE.get('selected_fields', [])) > 0:
+                self.select_time_btn.style = self.normal_btn_style
+
+        if len(utils.STORAGE.get('selected_fields', [])) == 0 and self.id and not self.was_redirected:
             reservation = reservation_service.get_by_event_id(self.id)
             utils.STORAGE['selected_fields'] = [i['start_date_time'] for i in
                                                 reservation['intervals']
@@ -204,13 +217,10 @@ class EventModal:
             self.reset()
         else:
             if utils.STORAGE.get('from_reservation', False):
-                if len(utils.STORAGE.get('selected_fields', [])) > 0:
-                    self.select_time_btn.style = self.normal_btn_style
-
                 self.room.value = utils.STORAGE.get('room_id', None)
-
             else:
                 self.reset()
+
         self.dialog.open = True
 
     def get_btn_text(self):
@@ -223,6 +233,8 @@ class EventModal:
 
     def remove(self, e):
         event_service.delete_event(self.id)
+        reservation = reservation_service.get_by_event_id(self.id)
+        reservation_service.delete_by_id(reservation['reservation_id'])
         self.id = None
         self.close()
 
@@ -260,7 +272,17 @@ class EventModal:
             self.date_btn.style = self.err_btn_style
             err = True
 
-        if len(utils.STORAGE.get('selected_fields', [])) == 0:
+        need_intervals_update = True
+
+        if not self.was_redirected:
+            if self.started_room_id != self.room.value or self.started_half_reservation != self.half_reservation.value:
+                utils.STORAGE['selected_fields'] = []
+                self.select_time_btn.style = self.err_btn_style
+                err = True
+            else:
+                need_intervals_update = False
+                self.select_time_btn.style = self.normal_btn_style
+        elif len(utils.STORAGE.get('selected_fields', [])) == 0:
             self.select_time_btn.style = self.err_btn_style
             err = True
 
@@ -281,12 +303,13 @@ class EventModal:
             event_service.update_event(self.id, self.name.value.strip(), self.date.value, self.type.value,
                                        self.description.value.strip(), self.category)
 
-            reservation_service.update_by_id(
-                self.reservation_id,
-                self.room.value,
-                self.id,
-                utils.STORAGE['selected_fields'],
-                utils.STORAGE['half_reservation'],
-            )
+            if need_intervals_update:
+                reservation_service.update_by_id(
+                    self.reservation_id,
+                    self.room.value,
+                    self.id,
+                    utils.STORAGE['selected_fields'],
+                    utils.STORAGE['half_reservation'],
+                )
 
         self.close()
