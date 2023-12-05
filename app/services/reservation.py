@@ -68,7 +68,7 @@ class ReservationService:
             room_id = old_reservation.room_id
         if not event_id:
             event_id = old_reservation.event_id
-        if not half_reservation:
+        if half_reservation is None:
             half_reservation = old_reservation.half_reservation
         if not intervals:
             intervals = [
