@@ -269,4 +269,5 @@ app/dist/
 
 ~$*.docx
 app/generated-*.ico
+generated-*.ico
 app/database.db

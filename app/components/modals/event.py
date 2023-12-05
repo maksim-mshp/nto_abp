@@ -190,6 +190,7 @@ class EventModal:
 
     def close(self, clear=True):
         self.dialog.open = False
+        self.was_redirected = False
         self.page.update()
         self.close_event()
 
@@ -312,5 +313,4 @@ class EventModal:
                     utils.STORAGE['half_reservation'],
                 )
 
-        self.was_redirected = False
         self.close()
