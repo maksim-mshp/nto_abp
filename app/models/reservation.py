@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -5,6 +7,7 @@ from core.database import Base
 
 from models.room import Room
 from models.event import Event
+from models.schedule import Schedule
 
 
 class Reservation(Base):
@@ -23,3 +26,5 @@ class Reservation(Base):
     intervals: Mapped[list["TimeInterval"] | None] = relationship(back_populates="reservation",
                                                                   lazy='joined',
                                                                   cascade="all,delete")
+
+    schedule: Mapped[Optional[list["Schedule"]]] = relationship(back_populates="reservation", cascade="all,delete")

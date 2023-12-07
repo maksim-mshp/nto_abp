@@ -156,11 +156,11 @@ def add_sample_data():
         datetimes_list = []
 
         start_date_time = datetime(2023, 12, 11, 9, 0, 0)
-        datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(2)])
+        datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(3)])
         start_date_time = datetime(2023, 12, 13, 9, 0, 0)
-        datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(2)])
+        datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(3)])
         start_date_time = datetime(2023, 12, 15, 9, 0, 0)
-        datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(2)])
+        datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(3)])
         reservation_service.create(room_id=4, event_id=5, intervals=datetimes_list, half_reservation=False, club=True)
 
         # 2 кружок ИЗО

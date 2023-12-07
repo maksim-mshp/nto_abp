@@ -24,11 +24,8 @@ class ReservationService:
             half_reservation: bool = False,
             club: bool = False
     ) -> dict:
+        schedule_intervals = intervals.copy()
         if club:
-            for interval in intervals:
-                self.schedule_repository.create(room_id=room_id, event_id=event_id, date_time=interval,
-                                                weekday=interval.weekday())
-
             start_intervals = intervals.copy()
             if start_intervals[-1].month == 6:
                 end_month = 9
@@ -54,6 +51,12 @@ class ReservationService:
             self.reservation_repository.create(room_id=room_id, event_id=event_id, half_reservation=half_reservation)
         )
         self.time_interval_repository.create(reservation_id=reservation['id'], intervals=intervals)
+
+        if club:
+            for interval in schedule_intervals:
+                self.schedule_repository.create(room_id=room_id, event_id=event_id, date_time=interval,
+                                                weekday=interval.weekday(), reservation_id=reservation['id'])
+
         return reservation
 
     def get_by_room_id(self, room_id) -> list[dict]:
@@ -93,7 +96,6 @@ class ReservationService:
             club: bool = False
     ) -> dict:
         old_reservation = self.reservation_repository.get_item_by_filter(id=reservation_id)
-
         if not room_id:
             room_id = old_reservation.room_id
         if not event_id:
@@ -147,6 +149,43 @@ class ReservationService:
                 'event_id': i.event_id,
             } for i in objects_on_date]
         return obj_as_list
+
+    def get_schedule_for_data_table(self):
+        objects_on_date = self.schedule_repository.get_list_items_by_filter()
+        data_dict = {}
+        teacher_room_dict = {}
+        for obj in objects_on_date:
+            data_dict.setdefault(obj.event.title, [[], [], [], [], [], [], []])
+            data_dict[obj.event.title][obj.weekday].append(obj.date_time)
+            teacher_room_dict[obj.event.title] = (obj.event.teacher.name, obj.room.name)
+        merge_data_dict = {}
+
+        for key in data_dict.keys():
+            merge_data_dict.setdefault(key, [[], [], [], [], [], [], []])
+            for i in range(len(data_dict[key])):
+                if len(data_dict[key][i]) > 0:
+                    start_time = data_dict[key][i][0]
+                    end_time = data_dict[key][i][0]
+                    for j in range(0, len(data_dict[key][i]) - 1):
+                        if data_dict[key][i][j] + timedelta(hours=1) == data_dict[key][i][j + 1]:
+                            end_time += timedelta(hours=1)
+                        else:
+                            merge_data_dict[key][i].append({
+                                'teacher': teacher_room_dict[key][0],
+                                'room': teacher_room_dict[key][1],
+                                'start_time': start_time,
+                                'end_time': end_time + timedelta(hours=1),
+                            })
+                            start_time = data_dict[key][i][j + 1]
+                            end_time = data_dict[key][i][j + 1]
+                    if start_time != end_time:
+                        merge_data_dict[key][i].append({
+                            'teacher': teacher_room_dict[key][0],
+                            'room': teacher_room_dict[key][1],
+                            'start_time': start_time,
+                            'end_time': end_time + timedelta(hours=1),
+                        })
+        return merge_data_dict
 
 
 reservation_service = ReservationService()

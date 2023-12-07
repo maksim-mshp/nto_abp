@@ -21,3 +21,6 @@ class Schedule(Base):
 
     date_time: Mapped[datetime]
     weekday: Mapped[int]
+
+    reservation_id: Mapped[int] = mapped_column(ForeignKey("reservation.id"))
+    reservation: Mapped["Reservation"] = relationship(back_populates="schedule")
