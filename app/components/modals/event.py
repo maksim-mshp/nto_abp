@@ -105,7 +105,6 @@ class EventModal:
         self.was_redirected = False
 
     def get_modal_title(self) -> str:
-        print(self.category)
         res = 'Создание '
         if self.id:
             res = 'Редактирование '
@@ -155,35 +154,48 @@ class EventModal:
     def half_reservation_change(self, e):
         self.was_redirected = False
 
+    def prepare_storage(self):
+        if not self.id:
+            return
+        if self.started_room_id != self.room.value or self.started_half_reservation != self.half_reservation.value:
+            utils.STORAGE['selected_fields'] = []
+            return
+        if len(utils.STORAGE.get('selected_fields', [])) > 0:
+            return
+        if self.was_redirected:
+            return
+
+        utils.STORAGE['selected_fields'] = [
+            i['start_date_time']
+            for i in reservation_service.get_by_event_id(self.id)['intervals']
+        ]
+
     def redirect_view(self, e=None):
         utils.STORAGE['room_id'] = int(self.room.value)
         utils.STORAGE['half_reservation'] = self.half_reservation.value
         utils.STORAGE['event_id'] = self.id
-
-        def prepare_storage():
-            if not self.id:
-                return
-            if self.started_room_id != self.room.value or self.started_half_reservation != self.half_reservation.value:
-                utils.STORAGE['selected_fields'] = []
-                return
-            if len(utils.STORAGE.get('selected_fields', [])) > 0:
-                return
-            if self.was_redirected:
-                return
-
-            utils.STORAGE['selected_fields'] = [
-                i['start_date_time']
-                for i in reservation_service.get_by_event_id(self.id)['intervals']
-            ]
-
-        prepare_storage()
+        self.prepare_storage()
         self.close(clear=False)
         self.was_redirected = True
+        utils.on_page_change_func(new_index=3)
+
+    def redirect_view_obr(self, e=None):
+        utils.STORAGE['room_id'] = int(self.room.value)
+        utils.STORAGE['half_reservation'] = self.half_reservation.value
+        utils.STORAGE['event_id'] = self.id
+
+        self.prepare_storage()
+        self.close(clear=False)
+        self.was_redirected = True
+
         utils.on_page_change_func(new_index=3)
 
     def reset(self):
         self.name.error_text = None
         self.type.error_text = None
+        self.clubs_type.error_text = None
+        self.teacher.error_text = None
+        self.room.error_text = None
         self.date_btn.style = self.normal_btn_style
         self.select_time_btn.style = self.normal_btn_style
         self.schedule_btn.style = self.normal_btn_style
@@ -210,6 +222,9 @@ class EventModal:
             self.date.value = event['date']
             self.description.value = event['description']
             self.reservation_id = reservation['reservation_id']
+
+            self.clubs_type.value = event_service.get_club_type_by_id(event['club_type_id'])
+            self.teacher = event_service.get_teacher_by_id(event['teacher_id'])
 
             self.started_room_id = reservation['room_id']
             self.started_half_reservation = reservation['half_reservation']
@@ -316,8 +331,20 @@ class EventModal:
         if self.name.value.strip() == '':
             self.name.error_text = 'Введите название'
             err = True
-        if (self.type.value is None) and self.category != utils.CATEGORIES[2]:
-            self.type.error_text = 'Выберите вид'
+        if self.type.value is None and self.category != utils.CATEGORIES[2]:
+            self.type.error_text = 'Выберите вид мероприятия'
+            err = True
+
+        if self.room.value is None:
+            self.room.error_text = 'Выберите помещение'
+            err = True
+
+        if self.teacher.value is None and self.category == utils.CATEGORIES[2]:
+            self.teacher.error_text = 'Выберите преподавателя'
+            err = True
+
+        if self.clubs_type.value is None and self.category == utils.CATEGORIES[2]:
+            self.clubs_type.error_text = 'Выберите вид кружка'
             err = True
 
         if self.date.value is None:
@@ -330,12 +357,15 @@ class EventModal:
             if self.started_room_id != self.room.value or self.started_half_reservation != self.half_reservation.value:
                 utils.STORAGE['selected_fields'] = []
                 self.select_time_btn.style = self.err_btn_style
+                self.schedule_btn.style = self.err_btn_style
                 err = True
             else:
                 need_intervals_update = False
                 self.select_time_btn.style = self.normal_btn_style
+                self.schedule_btn.style = self.normal_btn_style
         elif len(utils.STORAGE.get('selected_fields', [])) == 0:
             self.select_time_btn.style = self.err_btn_style
+            self.schedule_btn.style = self.err_btn_style
             err = True
 
         if err:
@@ -343,8 +373,14 @@ class EventModal:
             return
 
         if self.id is None:
-            res = event_service.create_event(self.name.value.strip(), self.date.value, self.type.value,
-                                             self.description.value.strip(), self.category)
+            res = event_service.create_event(
+                self.name.value.strip(),
+                self.date.value,
+                self.type.value,
+                self.description.value.strip(),
+                self.category,
+            )
+
             reservation_service.create(
                 self.room.value,
                 res['id'],

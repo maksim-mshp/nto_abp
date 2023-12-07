@@ -258,7 +258,6 @@ class ReservationTable(ft.UserControl):
                     if e.control.content.controls[0].color == SELECTED_COLOR:
                         e.control.content.controls.pop()
                         self.selected_fields.remove(e.control.data)
-            print(self.selected_fields)
             e.control.update()
 
     def reset(self, new_room_id: Optional[int] = None, half_reservation: bool = None):
