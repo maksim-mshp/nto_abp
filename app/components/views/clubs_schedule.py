@@ -12,17 +12,27 @@ class ClubsSchedule:
 
         self.nothing = ft.Container(ft.Text("Ничего не найдено"), width=100000, padding=50,
                                     alignment=ft.alignment.center)
-        self.dt = ft.DataTable(
-            columns=[
-                ft.DataColumn(ft.Text(i)) for i in
-                ["", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
-            ],
-            width=10000,
-            data_row_min_height=300
-        )
+
+        days_of_week = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
+
+        self.dt = ft.Column(width=10000)
+        self.add_row([self.create_header_cell(i) for i in days_of_week], '')
 
         self.component = ft.Column(controls=[self.dt, self.nothing], expand=1)
         self.hide()
+
+    @staticmethod
+    def create_header_cell(text: str):
+        return ft.Container(ft.Text(text, weight=ft.FontWeight.W_600, text_align=ft.TextAlign.CENTER),
+                            padding=ft.Padding(15, 15, 15, 15), expand=1)
+
+    def add_row(self, controls: list, title: str):
+        self.dt.controls.append(
+            ft.Container(
+                ft.Row([self.create_header_cell(title)] + controls,
+                       alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.OUTLINE_VARIANT)))
+        )
 
     def safe_update(self):
         try:
@@ -56,16 +66,14 @@ class ClubsSchedule:
             self.dt.visible = True
 
             for event in range(3):
-                self.dt.rows.append(ft.DataRow([
-                    ft.DataCell(self.get_column([{
+                self.add_row([
+                    self.get_column([{
                         'start_time': datetime.now(),
                         'end_time': datetime.now(),
                         'room': 'room',
                         'teacher': 'teacher',
-                    }])) for i in range(7)
-                ]))
-
-                self.dt.rows[-1].cells.insert(0, ft.DataCell(ft.Text('ИЗО', weight=ft.FontWeight.W_600)))
+                    }]) for i in range(7)
+                ], 'ИЗО')
 
     def hide(self):
         self.component.visible = False
