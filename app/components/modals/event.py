@@ -68,7 +68,7 @@ class EventModal:
         self.date_btn = ft.ElevatedButton(self.get_btn_text(), on_click=self.open_datepicker,
                                           icon=ft.icons.EDIT_CALENDAR, style=self.normal_btn_style)
 
-        self.schedule_btn = ft.ElevatedButton('Выберите расписание кружка', on_click=self.open_datepicker,
+        self.schedule_btn = ft.ElevatedButton('Выберите расписание кружка', on_click=self.redirect_view_obr,
                                               icon=ft.icons.SCHEDULE, style=self.normal_btn_style)
 
         self.select_time_btn = ft.ElevatedButton('Бронирование помещения', on_click=self.redirect_view,
@@ -188,7 +188,7 @@ class EventModal:
         self.close(clear=False)
         self.was_redirected = True
 
-        utils.on_page_change_func(new_index=3)
+        utils.on_page_change_func(new_index=4)
 
     def reset(self):
         self.name.error_text = None
@@ -224,7 +224,7 @@ class EventModal:
             self.reservation_id = reservation['reservation_id']
 
             self.clubs_type.value = event_service.get_club_type_by_id(event['club_type_id'])
-            self.teacher = event_service.get_teacher_by_id(event['teacher_id'])
+            self.teacher.value = event_service.get_teacher_by_id(event['teacher_id'])['name']
 
             self.started_room_id = reservation['room_id']
             self.started_half_reservation = reservation['half_reservation']
@@ -373,9 +373,15 @@ class EventModal:
             return
 
         if self.id is None:
-            res = event_service.create_event(self.name.value.strip(), self.date.value, self.category,
-                                             self.description.value.strip(),
-                                             self.type.value)
+            res = event_service.create_event(
+                self.name.value.strip(),
+                self.date.value,
+                self.category,
+                self.description.value.strip(),
+                self.type.value,
+                self.clubs_type.value,
+                self.teacher.value,
+            )
 
             reservation_service.create(
                 self.room.value,
@@ -384,8 +390,16 @@ class EventModal:
                 utils.STORAGE['half_reservation'],
             )
         else:
-            event_service.update_event(self.id, self.name.value.strip(), self.date.value, self.category,
-                                       self.description.value.strip(), self.type.value)
+            event_service.update_event(
+                self.id,
+                self.name.value.strip(),
+                self.date.value,
+                self.category,
+                self.description.value.strip(),
+                self.type.value,
+                self.clubs_type.value,
+                self.teacher.value,
+            )
 
             if need_intervals_update:
                 reservation_service.update_by_id(

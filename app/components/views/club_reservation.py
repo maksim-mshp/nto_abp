@@ -8,7 +8,7 @@ from utils import STORAGE, DEFAULT_BTN_STYLE
 
 
 class ClubReservation:
-    VIEW_TITLE: str = "Бронирование помещения"
+    VIEW_TITLE: str = "Расписание кружка"
     NAVBAR_HIDDEN: bool = True
 
     def __init__(self, page: ft.Page):
