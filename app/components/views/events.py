@@ -39,18 +39,15 @@ class Events:
         self.create_btn = ft.FloatingActionButton(icon=ft.icons.ADD, on_click=self.add_clicked)
         self.page.add(self.create_btn)
 
-        header_btn_style = ft.ButtonStyle(
-            shape=ft.RoundedRectangleBorder(radius=10),
-            padding=17
-        )
-
         self.component.controls.append(ft.Row([
             self.tabs,
-            ft.Row([
-                ft.ElevatedButton('Управление видами мероприятий', style=header_btn_style,
-                                  on_click=self.manage_types_clicked),
-                ft.ElevatedButton('Управление помещениями', style=header_btn_style,
-                                  on_click=self.manage_rooms_clicked)])
+            ft.PopupMenuButton(
+                items=[
+                    ft.PopupMenuItem(text='Управление видами мероприятий', on_click=self.manage_types_clicked),
+                    ft.PopupMenuItem(text='Управление помещениями', on_click=self.manage_rooms_clicked),
+                ],
+                tooltip='Показать меню'
+            )
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         ))
 
