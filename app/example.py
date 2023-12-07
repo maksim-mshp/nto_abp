@@ -5,6 +5,7 @@ import sqlalchemy
 from core.database import add_sample_data, session_maker
 from models.time_interval import TimeInterval
 from services.event import event_service
+from services.reservation import reservation_service
 from utils import object_as_dict, CATEGORIES
 
 add_sample_data()
@@ -31,12 +32,12 @@ def example():
     # datetimes_list = [start_date_time + timedelta(hours=i) for i in range(3)]
     # reservation_service.create(room_id=1, event_id=1, intervals=datetimes_list, half_reservation=False)
     #
-    # obj_as_list = reservation_service.get_time_intervals_by_date_and_room(datetime(2023, 12, 1), 1)
-    # print(obj_as_list)
+    obj_as_list = reservation_service.get_time_intervals_by_and_room(2)
+    print(obj_as_list)
 
-    club = event_service.create_club_type('кружок')
-    teacher = event_service.create_teacher('КАКОЙ - ТО ЧЕЛ')
-    event_service.create_event('title', datetime(2023, 12, 1), category=CATEGORIES[0], club_type=club['name'], teacher=teacher['name'])
+    # club = event_service.create_club_type('кружок')
+    # teacher = event_service.create_teacher('КАКОЙ - ТО ЧЕЛ')
+    # event_service.create_event('title', datetime(2023, 12, 1), category=CATEGORIES[0], club_type=club['name'], teacher=teacher['name'])
 
 
 example()

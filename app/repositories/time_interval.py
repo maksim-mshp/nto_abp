@@ -31,3 +31,10 @@ class TimeIntervalRepository(BaseRepository):
                 )
             ).all()
             return objects_on_date
+
+    def get_all_by_room(self, room_id: int):
+        with session_maker() as session:
+            objects_on_date = session.query(TimeInterval).join(TimeInterval.reservation).filter(
+                    Reservation.room_id == room_id
+            ).all()
+            return objects_on_date
