@@ -3,6 +3,7 @@ from components.views.jobs import Jobs
 from components.views.rooms import Rooms
 from components.views.reservation import Reservation
 from components.views.club_reservation import ClubReservation
+from components.views.clubs_schedule import ClubsSchedule
 from components.navbar import NavigationBar
 from core.database import add_sample_data
 from tendo import singleton
@@ -40,7 +41,8 @@ def main(page: ft.Page):
         Jobs(page),
         Rooms(page),
         Reservation(page),
-        ClubReservation(page)
+        ClubReservation(page),
+        ClubsSchedule(page)
     ]
 
     nav = NavigationBar(page, views, on_page_change, page_index)
