@@ -199,7 +199,8 @@ class ReservationColumn(ft.UserControl):
                 date_time = field['start_date_time']
                 date_time = date_time.replace(year=self.date_time.year, month=self.date_time.month, day=self.date_time.day)
                 field['start_date_time'] = date_time
-                column_booked.append(field)
+                if field not in column_booked:
+                    column_booked.append(field)
         return column_booked
 
 
