@@ -165,6 +165,10 @@ class EventModal:
     def prepare_storage(self):
         if self.is_obr():
             utils.STORAGE['club_start_datetime'] = self.date.value
+            reservation = reservation_service.get_schedule_by_room_and_event(self.room.value, self.id)
+            utils.STORAGE['selected_fields'] = [i['start_date_time'] for i in
+                                                reservation
+                                                ]
         if not self.id:
             return
         if self.started_room_id != self.room.value or self.started_half_reservation != self.half_reservation.value:
@@ -175,10 +179,11 @@ class EventModal:
         if self.was_redirected:
             return
 
-        utils.STORAGE['selected_fields'] = [
-            i['start_date_time']
-            for i in reservation_service.get_by_event_id(self.id)['intervals']
-        ]
+        if not self.is_obr():
+            utils.STORAGE['selected_fields'] = [
+                i['start_date_time']
+                for i in reservation_service.get_by_event_id(self.id)['intervals']
+            ]
 
     def redirect_view(self, e=None):
         utils.STORAGE['room_id'] = int(self.room.value)
@@ -278,9 +283,15 @@ class EventModal:
 
         if len(utils.STORAGE.get('selected_fields', [])) == 0 and self.id and not self.was_redirected:
             reservation = reservation_service.get_by_event_id(self.id)
-            utils.STORAGE['selected_fields'] = [i['start_date_time'] for i in
-                                                reservation['intervals']
-                                                ]
+            if self.is_obr():
+                res = reservation_service.get_schedule_by_room_and_event(self.room.value, self.id)
+                utils.STORAGE['selected_fields'] = [i['start_date_time'] for i in
+                                                    res
+                                                    ]
+            else:
+                utils.STORAGE['selected_fields'] = [i['start_date_time'] for i in
+                                                    reservation['intervals']
+                                                    ]
             utils.STORAGE['half_reservation'] = reservation['half_reservation']
             self.reset()
         else:

@@ -283,6 +283,13 @@ class ReservationTable(ft.UserControl):
         date_time = club_start_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
         self.start_date_time = date_time - timedelta(days=date_time.weekday() - 1)
         self.date_time = date_time - timedelta(days=date_time.weekday() - 1)
+
+        date_times_list = [self.date_time + timedelta(days=i) for i in range(-1, 6)]
+
+        for i in range(len(self.selected_fields)):
+            hours = self.selected_fields[i].hour
+            self.selected_fields[i] = date_times_list[self.selected_fields[i].weekday()].replace(hour=hours)
+
         for i in range(1, self.days_count + 1):
             self.main_row.controls[i] = ReservationColumn(self.date_time + timedelta(days=i - 2), self.selected_fields,
                                                           self.reservation_tile_click, self.room_id,

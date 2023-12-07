@@ -32,7 +32,7 @@ def example():
     # datetimes_list = [start_date_time + timedelta(hours=i) for i in range(3)]
     # reservation_service.create(room_id=1, event_id=1, intervals=datetimes_list, half_reservation=False)
     #
-    obj_as_list = reservation_service.get_time_intervals_by_and_room(2)
+    obj_as_list = reservation_service.get_schedule_by_room_and_event(3, 8)
     print(obj_as_list)
 
     # club = event_service.create_club_type('кружок')

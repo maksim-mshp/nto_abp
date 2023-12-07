@@ -80,19 +80,19 @@ def add_sample_data():
                   event_type_id=4),
             # event_id 5
             Event(title='Мастер-классы по эстрадному вокалу',
-                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 7), category=CATEGORIES[2],
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 15), category=CATEGORIES[2],
                   club_type_id=1, teacher_id=1),
             # event_id 6
             Event(title='ИЗО',
-                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 7), category=CATEGORIES[2],
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 13), category=CATEGORIES[2],
                   club_type_id=3, teacher_id=2),
             # event_id 7
             Event(title='Гитара',
-                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 7), category=CATEGORIES[2],
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 14), category=CATEGORIES[2],
                   club_type_id=1, teacher_id=3),
             # event_id 8
             Event(title='Хореография',
-                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 7), category=CATEGORIES[2],
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 20), category=CATEGORIES[2],
                   club_type_id=4, teacher_id=4),
 
             JobType(name='Уборка'),
@@ -163,7 +163,7 @@ def add_sample_data():
         datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(2)])
         reservation_service.create(room_id=4, event_id=5, intervals=datetimes_list, half_reservation=False, club=True)
 
-        # 2 кружок
+        # 2 кружок ИЗО
         STORAGE['club_start_datetime'] = datetime(2023, 12, 13)
         datetimes_list = []
 
@@ -175,7 +175,7 @@ def add_sample_data():
         datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(2)])
         reservation_service.create(room_id=5, event_id=6, intervals=datetimes_list, half_reservation=False, club=True)
 
-        # 3 кружок
+        # 3 кружок ГИТАРА
         STORAGE['club_start_datetime'] = datetime(2023, 12, 14)
         datetimes_list = []
 
@@ -185,7 +185,7 @@ def add_sample_data():
         datetimes_list.extend([start_date_time + timedelta(hours=i) for i in range(2)])
         reservation_service.create(room_id=4, event_id=7, intervals=datetimes_list, half_reservation=False, club=True)
 
-        # 4 кружок
+        # 4 кружок ХОРЕОГРАФИЯ
         STORAGE['club_start_datetime'] = datetime(2023, 12, 20)
         datetimes_list = []
 

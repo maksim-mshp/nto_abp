@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from repositories.room import RoomRepository
 from repositories.time_interval import TimeIntervalRepository
 from repositories.reservation import ReservationRepository
+from repositories.schedule import ScheduleRepository
 
 from utils import object_as_dict, STORAGE
 
@@ -13,6 +14,7 @@ class ReservationService:
         self.room_repository = RoomRepository()
         self.time_interval_repository = TimeIntervalRepository()
         self.reservation_repository = ReservationRepository()
+        self.schedule_repository = ScheduleRepository()
 
     def create(
             self,
@@ -23,6 +25,10 @@ class ReservationService:
             club: bool = False
     ) -> dict:
         if club:
+            for interval in intervals:
+                self.schedule_repository.create(room_id=room_id, event_id=event_id, date_time=interval,
+                                                weekday=interval.weekday())
+
             start_intervals = intervals.copy()
             if start_intervals[-1].month == 6:
                 end_month = 9
@@ -129,6 +135,17 @@ class ReservationService:
                 'half_reservation': i.reservation.half_reservation,
             }
         } for i in objects_on_date]
+        return obj_as_list
+
+    def get_schedule_by_room_and_event(self, room_id: int, event_id: int):
+        objects_on_date = self.schedule_repository.get_list_items_by_filter(room_id=room_id, event_id=event_id)
+        obj_as_list = [
+            {
+                'start_date_time': i.date_time,
+                'weekday': i.weekday,
+                'room_id': i.room_id,
+                'event_id': i.event_id,
+            } for i in objects_on_date]
         return obj_as_list
 
 
