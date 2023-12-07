@@ -24,6 +24,18 @@ class EventModal:
             on_change=self.on_type_change, dense=True
         )
 
+        self.clubs_type = ft.Dropdown(
+            options=[ft.dropdown.Option(i) for i in event_service.get_clubs_types()],
+            label='Вид кружка',
+            on_change=self.on_clubs_type_change, dense=True
+        )
+
+        self.teacher = ft.Dropdown(
+            options=[ft.dropdown.Option(i) for i in event_service.get_teachers()],
+            label='Преподаватель',
+            on_change=self.on_teacher_change, dense=True
+        )
+
         self.name = ft.TextField(label="Название", on_change=self.on_name_change, dense=True)
         self.description = ft.TextField(label="Описание", multiline=True, dense=True)
 
@@ -56,6 +68,9 @@ class EventModal:
         self.date_btn = ft.ElevatedButton(self.get_btn_text(), on_click=self.open_datepicker,
                                           icon=ft.icons.EDIT_CALENDAR, style=self.normal_btn_style)
 
+        self.schedule_btn = ft.ElevatedButton('Выберите расписание кружка', on_click=self.open_datepicker,
+                                              icon=ft.icons.SCHEDULE, style=self.normal_btn_style)
+
         self.select_time_btn = ft.ElevatedButton('Бронирование помещения', on_click=self.redirect_view,
                                                  icon=ft.icons.MEETING_ROOM, style=self.normal_btn_style,
                                                  )
@@ -73,10 +88,13 @@ class EventModal:
         self.form = ft.Column(controls=[
             self.name,
             self.type,
+            self.clubs_type,
             self.date_btn,
             self.room,
             self.half_reservation,
             self.select_time_btn,
+            self.schedule_btn,
+            self.teacher,
             ft.Container(expand=1, content=self.description),
         ], height=530, width=625, spacing=17)
 
@@ -86,9 +104,20 @@ class EventModal:
         self.started_half_reservation = None
         self.was_redirected = False
 
+    def get_modal_title(self) -> str:
+        print(self.category)
+        res = 'Создание '
+        if self.id:
+            res = 'Редактирование '
+        if self.category == utils.CATEGORIES[2]:
+            res += 'кружка'
+        else:
+            res += 'мероприятия'
+        return res
+
     def build(self):
         self.dialog = ft.AlertDialog(
-            title=ft.Text("Создание мероприятия" if self.id is None else 'Редактирование мероприятия'),
+            title=ft.Text(self.get_modal_title()),
             content=self.form,
             actions=[
                 ft.Row([
@@ -119,6 +148,7 @@ class EventModal:
         self.half_reservation.visible = room_service.get_room_by_id(self.room.value)['half_reservation']
         self.half_reservation.value = False
         self.select_time_btn.disabled = False
+        self.schedule_btn.disabled = False
         self.was_redirected = False
         self.page.update()
 
@@ -156,7 +186,9 @@ class EventModal:
         self.type.error_text = None
         self.date_btn.style = self.normal_btn_style
         self.select_time_btn.style = self.normal_btn_style
+        self.schedule_btn.style = self.normal_btn_style
         self.select_time_btn.disabled = not self.id
+        self.schedule_btn.disabled = not self.id
 
         if self.id is None:
             self.name.value = ''
@@ -167,6 +199,7 @@ class EventModal:
             self.started_room_id = None
             self.started_half_reservation = None
             self.half_reservation.value = None
+
         else:
             event = event_service.get_event_by_id(self.id)
             reservation = reservation_service.get_by_event_id(self.id)
@@ -185,8 +218,14 @@ class EventModal:
             self.half_reservation.visible = room_service.get_room_by_id(self.room.value)['half_reservation']
 
         self.date_btn.text = self.get_btn_text()
+        self.dialog.title = ft.Text(self.get_modal_title())
 
         self.type.visible = self.category != utils.CATEGORIES[2]
+        self.clubs_type.visible = self.category == utils.CATEGORIES[2]
+        self.description.visible = self.category != utils.CATEGORIES[2]
+        self.select_time_btn.visible = self.category != utils.CATEGORIES[2]
+        self.schedule_btn.visible = self.category == utils.CATEGORIES[2]
+        self.teacher.visible = self.category == utils.CATEGORIES[2]
 
     def close(self, clear=True):
         self.dialog.open = False
@@ -227,6 +266,8 @@ class EventModal:
     def get_btn_text(self):
         if self.date.value is not None:
             return utils.get_formatted_date(self.date.value)
+        if self.category == utils.CATEGORIES[2]:
+            return 'Выберите дату начала кружка'
         return 'Выберите дату'
 
     def cancel(self, e):
@@ -257,6 +298,16 @@ class EventModal:
     def on_type_change(self, e):
         if self.type.value is not None:
             self.type.error_text = None
+            self.dialog.update()
+
+    def on_clubs_type_change(self, e):
+        if self.clubs_type.value is not None:
+            self.clubs_type.error_text = None
+            self.dialog.update()
+
+    def on_teacher_change(self, e):
+        if self.teacher.value is not None:
+            self.teacher.error_text = None
             self.dialog.update()
 
     def save(self, e):

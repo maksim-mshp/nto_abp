@@ -1,9 +1,11 @@
 import flet as ft
 
 import utils
+from components.modals.clubs import ClubsTypeModal
 from components.modals.event import EventModal
 from components.modals.event_type import EventTypeModal
 from components.modals.job_room import JobRoomModal
+from components.modals.teachers import TeachersModal
 
 from services.event import event_service
 from services.reservation import reservation_service
@@ -18,6 +20,9 @@ class Events:
     def __init__(self, page: ft.Page):
         self.modal_rooms = None
         self.modal_event_type = None
+        self.modal_teachers = None
+        self.modal_clubs_type = None
+
         self.page = page
         self.dt = None
         self.component = ft.Column(controls=[], expand=1)
@@ -39,15 +44,25 @@ class Events:
         self.create_btn = ft.FloatingActionButton(icon=ft.icons.ADD, on_click=self.add_clicked)
         self.page.add(self.create_btn)
 
+        self.menu_items = [
+            ft.PopupMenuItem(text='Управление видами мероприятий', on_click=self.manage_types_clicked),
+            ft.PopupMenuItem(text='Управление помещениями', on_click=self.manage_rooms_clicked),
+        ]
+
+        self.menu_items_obr = [
+            ft.PopupMenuItem(text='Управление видами кружков', on_click=self.manage_clubs_type),
+            ft.PopupMenuItem(text='Управление помещениями', on_click=self.manage_rooms_clicked),
+            ft.PopupMenuItem(text='Управление преподавателями', on_click=self.manage_teachers),
+        ]
+
+        self.menu_btn = ft.PopupMenuButton(
+            items=self.menu_items,
+            tooltip='Показать меню'
+        )
+
         self.component.controls.append(ft.Row([
             self.tabs,
-            ft.PopupMenuButton(
-                items=[
-                    ft.PopupMenuItem(text='Управление видами мероприятий', on_click=self.manage_types_clicked),
-                    ft.PopupMenuItem(text='Управление помещениями', on_click=self.manage_rooms_clicked),
-                ],
-                tooltip='Показать меню'
-            )
+            self.menu_btn
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         ))
 
@@ -119,6 +134,22 @@ class Events:
         self.modal_edit.open()
         self.page.update()
 
+    def manage_teachers(self, e):
+        """открывает модалку управление преподами"""
+        self.modal_teachers = TeachersModal(self.page, close_event=self.on_change)
+        self.page.dialog = self.modal_teachers.dialog
+        self.modal_teachers.open()
+        self.safe_update()
+        self.page.update()
+
+    def manage_clubs_type(self, e):
+        """открывает модалку управление кружками"""
+        self.modal_clubs_type = ClubsTypeModal(self.page, close_event=self.on_change)
+        self.page.dialog = self.modal_clubs_type.dialog
+        self.modal_clubs_type.open()
+        self.safe_update()
+        self.page.update()
+
     def safe_remove(self, obj):
         try:
             self.component.controls.remove(obj)
@@ -139,6 +170,9 @@ class Events:
 
         if self.tabs.selected_index != 2:
             self.dt.controls[0].columns.insert(1, ft.DataColumn(ft.Text("Вид")))
+            self.menu_btn.items = self.menu_items
+        else:
+            self.menu_btn.items = self.menu_items_obr
 
         self.dt.controls[0].rows.clear()
         if len(events) > 0:
