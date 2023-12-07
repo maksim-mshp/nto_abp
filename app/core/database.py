@@ -15,6 +15,8 @@ class Base(DeclarativeBase):
 
 
 from models.event_type import EventType
+from models.club_type import ClubType
+from models.teacher import Teacher
 from models.event import Event
 from models.job_type import JobType
 from models.room import Room
@@ -51,19 +53,37 @@ def add_sample_data():
             EventType(name='Концерт'),
             EventType(name='Репетиция'),
             EventType(name='Выставка'),
-            EventType(name='Мастер-класс'),
+            Teacher(name="Иванова Анна Петровна"),
+            Teacher(name="Смирнов Алексей Игоревич"),
+            Teacher(name="Козлова Екатерина Дмитриевна"),
+            Teacher(name="Попов Денис Сергеевич"),
+            ClubType(name='Музыкальное творчество'),
+            ClubType(name="Робототехника"),
+            ClubType(name="Рисование"),
+            ClubType(name="Танцы"),
             Event(title='Выставка «Архитектура и мода. В потоке времени»',
                   description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 14), category=CATEGORIES[1],
                   event_type_id=4),
-            Event(title='Мастер-классы по эстрадному вокалу «Мне нужно петь» в ноябре',
-                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 7), category=CATEGORIES[2],
-                  event_type_id=None),
             Event(title='Спектакль-концерт в рамках проекта «П» в кубе: «Неделя просвещения»',
                   description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 5), category=CATEGORIES[1],
                   event_type_id=5),
             Event(title='Выставка «Под занавесом. Мировые звезды — в объективе легендарного фотографа «Известий» Сергея Смирнова»',
                   description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 14), category=CATEGORIES[1],
                   event_type_id=4),
+
+            Event(title='Мастер-классы по эстрадному вокалу',
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 7), category=CATEGORIES[2],
+                  club_type_id=1, teacher_id=1),
+            Event(title='ИЗО',
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 7), category=CATEGORIES[2],
+                  club_type_id=3, teacher_id=2),
+            Event(title='Гитара',
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 7), category=CATEGORIES[2],
+                  club_type_id=1, teacher_id=3),
+            Event(title='Хореография',
+                  description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 7), category=CATEGORIES[2],
+                  club_type_id=4, teacher_id=4),
+
             JobType(name='Уборка'),
             JobType(name='Установка экспонатов'),
             JobType(name='Настройка оборудования'),
