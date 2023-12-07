@@ -76,6 +76,7 @@ class ReservationService:
             event_id: Optional[int] = None,
             intervals: Optional[list[datetime]] = None,
             half_reservation: Optional[bool] = None,
+            club: bool = False
     ) -> dict:
         old_reservation = self.reservation_repository.get_item_by_filter(id=reservation_id)
 
@@ -92,7 +93,7 @@ class ReservationService:
             ]
 
         self.delete_by_id(reservation_id)
-        reservation = self.create(room_id, event_id, intervals, half_reservation)
+        reservation = self.create(room_id, event_id, intervals, half_reservation, club)
         return reservation
 
     def get_time_intervals_by_date_and_room(self, date_time: datetime, room_id: int):

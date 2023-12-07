@@ -104,11 +104,15 @@ class EventModal:
         self.started_half_reservation = None
         self.was_redirected = False
 
+    def is_obr(self):
+        """Проверка является ли мероприятие кружком"""
+        return self.category == utils.CATEGORIES[2]
+
     def get_modal_title(self) -> str:
         res = 'Создание '
         if self.id:
             res = 'Редактирование '
-        if self.category == utils.CATEGORIES[2]:
+        if self.is_obr():
             res += 'кружка'
         else:
             res += 'мероприятия'
@@ -164,6 +168,8 @@ class EventModal:
             return
         if self.was_redirected:
             return
+        if self.is_obr():
+            utils.STORAGE['club_start_datetime'] = self.date.value
 
         utils.STORAGE['selected_fields'] = [
             i['start_date_time']
@@ -235,12 +241,12 @@ class EventModal:
         self.date_btn.text = self.get_btn_text()
         self.dialog.title = ft.Text(self.get_modal_title())
 
-        self.type.visible = self.category != utils.CATEGORIES[2]
-        self.clubs_type.visible = self.category == utils.CATEGORIES[2]
-        self.description.visible = self.category != utils.CATEGORIES[2]
-        self.select_time_btn.visible = self.category != utils.CATEGORIES[2]
-        self.schedule_btn.visible = self.category == utils.CATEGORIES[2]
-        self.teacher.visible = self.category == utils.CATEGORIES[2]
+        self.type.visible = not self.is_obr()
+        self.clubs_type.visible = self.is_obr()
+        self.description.visible = not self.is_obr()
+        self.select_time_btn.visible = not self.is_obr()
+        self.schedule_btn.visible = self.is_obr()
+        self.teacher.visible = self.is_obr()
 
     def close(self, clear=True):
         self.dialog.open = False
@@ -257,7 +263,7 @@ class EventModal:
     def open(self):
         self.type.options = [ft.dropdown.Option(i) for i in event_service.get_events_types()]
         self.room.options = [ft.dropdown.Option(i['id'], i['name']) for i in job_service.get_jobs_rooms_with_id()]
-        self.type.visible = self.category != utils.CATEGORIES[2]
+        self.type.visible = not self.is_obr()
 
         if utils.STORAGE.get('from_reservation', False):
             if len(utils.STORAGE.get('selected_fields', [])) > 0:
@@ -281,7 +287,7 @@ class EventModal:
     def get_btn_text(self):
         if self.date.value is not None:
             return utils.get_formatted_date(self.date.value)
-        if self.category == utils.CATEGORIES[2]:
+        if self.is_obr():
             return 'Выберите дату начала кружка'
         return 'Выберите дату'
 
@@ -331,7 +337,7 @@ class EventModal:
         if self.name.value.strip() == '':
             self.name.error_text = 'Введите название'
             err = True
-        if self.type.value is None and self.category != utils.CATEGORIES[2]:
+        if self.type.value is None and not self.is_obr():
             self.type.error_text = 'Выберите вид мероприятия'
             err = True
 
@@ -339,11 +345,11 @@ class EventModal:
             self.room.error_text = 'Выберите помещение'
             err = True
 
-        if self.teacher.value is None and self.category == utils.CATEGORIES[2]:
+        if self.teacher.value is None and self.is_obr():
             self.teacher.error_text = 'Выберите преподавателя'
             err = True
 
-        if self.clubs_type.value is None and self.category == utils.CATEGORIES[2]:
+        if self.clubs_type.value is None and self.is_obr():
             self.clubs_type.error_text = 'Выберите вид кружка'
             err = True
 
@@ -388,6 +394,7 @@ class EventModal:
                 res['id'],
                 utils.STORAGE['selected_fields'],
                 utils.STORAGE['half_reservation'],
+                self.is_obr()
             )
         else:
             event_service.update_event(
@@ -408,6 +415,7 @@ class EventModal:
                     self.id,
                     utils.STORAGE['selected_fields'],
                     utils.STORAGE['half_reservation'],
+                    self.is_obr()
                 )
 
         self.close()

@@ -210,8 +210,8 @@ class ReservationTable(ft.UserControl):
                  tile_height: int = 20):
         super().__init__()
         date_time = date_time.replace(hour=0, minute=0, second=0, microsecond=0)
-        self.start_date_time = date_time - timedelta(days=date_time.weekday()-1)
-        self.date_time = date_time - timedelta(days=date_time.weekday()-1)
+        self.start_date_time = date_time - timedelta(days=date_time.weekday() - 1)
+        self.date_time = date_time - timedelta(days=date_time.weekday() - 1)
         self.tile_width = tile_width
         self.tile_height = tile_height
         self.main_row = ft.Row(spacing=0, alignment=ft.alignment.top_center,
@@ -268,14 +268,15 @@ class ReservationTable(ft.UserControl):
                         self.selected_fields.remove(e.control.data)
             e.control.update()
 
-    def reset(self, new_room_id: Optional[int] = None, half_reservation: bool = None):
+    def reset(self, new_room_id: Optional[int] = None, half_reservation: bool = None,
+              club_start_datetime: datetime = None):
         if new_room_id:
             self.room_id = new_room_id
         if half_reservation is not None:
             self.half_reservation = half_reservation
 
         self.selected_fields = STORAGE.get('selected_fields', []).copy()
-        self.date_time = self.start_date_time
+        self.date_time = club_start_datetime
         for i in range(1, self.days_count + 1):
             self.main_row.controls[i] = ReservationColumn(self.date_time + timedelta(days=i - 2), self.selected_fields,
                                                           self.reservation_tile_click, self.room_id,

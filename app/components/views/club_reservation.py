@@ -18,7 +18,8 @@ class ClubReservation:
         self.room_id = STORAGE.get('room_id', 1)
 
         self.table = ft.Row([ReservationTable(
-            date_time=datetime.now(), room_id=self.room_id, tile_width=90, tile_height=27, days_count=7,
+            date_time=STORAGE.get('club_start_datetime', datetime.now()),
+            room_id=self.room_id, tile_width=90, tile_height=27, days_count=7,
             half_reservation=self.half_reservation, editable=True)], alignment=ft.MainAxisAlignment.CENTER,
             vertical_alignment=ft.CrossAxisAlignment.CENTER)
 
@@ -53,7 +54,7 @@ class ClubReservation:
         self.safe_update()
 
     def show(self):
-        self.table.controls[0].reset(STORAGE['room_id'], STORAGE['half_reservation'])
+        self.table.controls[0].reset(STORAGE['room_id'], STORAGE['half_reservation'], STORAGE['club_start_datetime'])
         self.component.visible = True
         self.page.title = self.VIEW_TITLE
         self.safe_update()
