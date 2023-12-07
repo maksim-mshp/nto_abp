@@ -66,7 +66,7 @@ def add_sample_data():
                   event_type_id=4),
             Event(title='Спектакль-концерт в рамках проекта «П» в кубе: «Неделя просвещения»',
                   description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 5), category=CATEGORIES[1],
-                  event_type_id=5),
+                  event_type_id=1),
             Event(title='Выставка «Под занавесом. Мировые звезды — в объективе легендарного фотографа «Известий» Сергея Смирнова»',
                   description='Очень крутое событие приходите!!!', date=datetime(2023, 12, 14), category=CATEGORIES[1],
                   event_type_id=4),

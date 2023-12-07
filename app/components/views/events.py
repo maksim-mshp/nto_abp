@@ -161,18 +161,26 @@ class Events:
         events = event_service.get_events(category)
         self.safe_remove(self.dt)
         self.dt = ft.Column([ft.DataTable(
-            columns=[
-                ft.DataColumn(ft.Text("Название")),
-                ft.DataColumn(ft.Text("Дата")),
-            ],
+            columns=[],
             width=100000,
         )], scroll=ft.ScrollMode.ADAPTIVE, expand=1)
 
         if self.tabs.selected_index != 2:
-            self.dt.controls[0].columns.insert(1, ft.DataColumn(ft.Text("Вид")))
+            self.dt.controls[0].columns = [
+                ft.DataColumn(ft.Text("Название")),
+                ft.DataColumn(ft.Text("Вид мероприятия")),
+                ft.DataColumn(ft.Text("Дата")),
+            ]
             self.menu_btn.items = self.menu_items
+            self.page.title = self.VIEW_TITLE
         else:
+            self.dt.controls[0].columns = [
+                ft.DataColumn(ft.Text("Название")),
+                ft.DataColumn(ft.Text("Вид кружка")),
+                ft.DataColumn(ft.Text("Преподаватель")),
+            ]
             self.menu_btn.items = self.menu_items_obr
+            self.page.title = 'Кружки'
 
         self.dt.controls[0].rows.clear()
         if len(events) > 0:
@@ -180,7 +188,8 @@ class Events:
                 ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Text(event['title'])),
-                        ft.DataCell(ft.Text(get_formatted_date(event['date']))),
+                        ft.DataCell(ft.Text(event_service.get_club_type_by_id(event['club_type_id']))),
+                        ft.DataCell(ft.Text(event_service.get_teacher_by_id(event['teacher_id'])['name'])),
                     ]
                     if self.tabs.selected_index == 2 else
                     [

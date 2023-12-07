@@ -145,13 +145,17 @@ class EventModal:
             padding=15
         )))
 
+    def update_schedule_btn(self):
+        self.schedule_btn.disabled = not (self.room.value and self.date.value)
+
     def on_room_change(self, e=None):
         utils.STORAGE['selected_fields'] = []
         utils.STORAGE['room_id'] = int(self.room.value)
         self.half_reservation.visible = room_service.get_room_by_id(self.room.value)['half_reservation']
         self.half_reservation.value = False
         self.select_time_btn.disabled = False
-        self.schedule_btn.disabled = False
+        self.room.error_text = None
+        self.update_schedule_btn()
         self.was_redirected = False
         self.page.update()
 
@@ -310,6 +314,7 @@ class EventModal:
         if self.date.value is not None:
             self.date_btn.style = self.normal_btn_style
 
+        self.update_schedule_btn()
         self.date_btn.text = self.get_btn_text()
         self.page.update()
 
@@ -339,23 +344,23 @@ class EventModal:
         if self.name.value.strip() == '':
             self.name.error_text = 'Введите название'
             err = True
-        if self.type.value is None and not self.is_obr():
+        if not self.type.value and not self.is_obr():
             self.type.error_text = 'Выберите вид мероприятия'
             err = True
 
-        if self.room.value is None:
+        if not self.room.value:
             self.room.error_text = 'Выберите помещение'
             err = True
 
-        if self.teacher.value is None and self.is_obr():
+        if not self.teacher.value and self.is_obr():
             self.teacher.error_text = 'Выберите преподавателя'
             err = True
 
-        if self.clubs_type.value is None and self.is_obr():
+        if not self.clubs_type.value and self.is_obr():
             self.clubs_type.error_text = 'Выберите вид кружка'
             err = True
 
-        if self.date.value is None:
+        if not self.date.value:
             self.date_btn.style = self.err_btn_style
             err = True
 
