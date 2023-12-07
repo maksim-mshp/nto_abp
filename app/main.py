@@ -40,9 +40,9 @@ def main(page: ft.Page):
         Events(page),
         Jobs(page),
         Rooms(page),
+        ClubsSchedule(page),
         Reservation(page),
         ClubReservation(page),
-        ClubsSchedule(page)
     ]
 
     nav = NavigationBar(page, views, on_page_change, page_index)

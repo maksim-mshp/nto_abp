@@ -11,6 +11,8 @@ class ClubsSchedule:
         self.page = page
         self.component = ft.Column(controls=[], expand=1)
 
+        self.hide()
+
     def safe_update(self):
         try:
             self.component.update()
