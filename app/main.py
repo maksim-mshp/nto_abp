@@ -35,7 +35,7 @@ def main(page: ft.Page):
 
     utils.on_page_change_func = on_page_change
 
-    page_index = 0
+    page_index = 3
     views = [
         Events(page),
         Jobs(page),
