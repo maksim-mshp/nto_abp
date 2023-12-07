@@ -165,10 +165,6 @@ class EventModal:
     def prepare_storage(self):
         if self.is_obr():
             utils.STORAGE['club_start_datetime'] = self.date.value
-            reservation = reservation_service.get_schedule_by_room_and_event(self.room.value, self.id)
-            utils.STORAGE['selected_fields'] = [i['start_date_time'] for i in
-                                                reservation
-                                                ]
         if not self.id:
             return
         if self.started_room_id != self.room.value or self.started_half_reservation != self.half_reservation.value:
@@ -179,7 +175,12 @@ class EventModal:
         if self.was_redirected:
             return
 
-        if not self.is_obr():
+        if self.is_obr():
+            reservation = reservation_service.get_schedule_by_room_and_event(self.room.value, self.id)
+            utils.STORAGE['selected_fields'] = [i['start_date_time'] for i in
+                                                reservation
+                                                ]
+        else:
             utils.STORAGE['selected_fields'] = [
                 i['start_date_time']
                 for i in reservation_service.get_by_event_id(self.id)['intervals']
