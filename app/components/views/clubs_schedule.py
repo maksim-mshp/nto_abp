@@ -24,13 +24,13 @@ class ClubsSchedule:
     @staticmethod
     def create_header_cell(text: str):
         return ft.Container(ft.Text(text, weight=ft.FontWeight.W_600, text_align=ft.TextAlign.CENTER),
-                            padding=ft.Padding(15, 15, 15, 15), expand=1)
+                            padding=ft.Padding(15, 15, 15, 15), width=150)
 
     def add_row(self, controls: list, title: str):
         self.dt.controls.append(
             ft.Container(
                 ft.Row([self.create_header_cell(title)] + controls,
-                       alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                       alignment=ft.MainAxisAlignment.SPACE_AROUND),
                 border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.OUTLINE_VARIANT)))
         )
 
@@ -47,7 +47,7 @@ class ClubsSchedule:
 
         return ft.Container(
             ft.Text(text, bgcolor=bgcolor),
-            bgcolor=bgcolor, border_radius=10,
+            bgcolor=bgcolor, border_radius=10, padding=10
         )
 
     def get_column(self, one_day_list: list[dict]):
@@ -73,7 +73,7 @@ class ClubsSchedule:
                         'room': 'room',
                         'teacher': 'teacher',
                     }]) for i in range(7)
-                ], 'ИЗО')
+                ], 'ИЗО11111111111111111111111111111111111111111111111111111111111111')
 
     def hide(self):
         self.component.visible = False
