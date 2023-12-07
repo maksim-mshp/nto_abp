@@ -1,5 +1,5 @@
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from repositories.room import RoomRepository
 from repositories.time_interval import TimeIntervalRepository
@@ -19,8 +19,23 @@ class ReservationService:
             room_id: int,
             event_id: int,
             intervals: list[datetime],
-            half_reservation: bool = False
+            half_reservation: bool = False,
+            club: bool = False
     ) -> dict:
+        if club:
+            start_intervals = intervals.copy()
+            run = True
+            while run:
+                tmp_intervals = []
+                for i in start_intervals:
+                    date_time = i + timedelta(days=7)
+                    if date_time.month != 6:
+                        tmp_intervals.append(i + timedelta(days=7))
+                    else:
+                        run = False
+                intervals.extend(tmp_intervals)
+                start_intervals = tmp_intervals.copy()
+
         reservation = object_as_dict(
             self.reservation_repository.create(room_id=room_id, event_id=event_id, half_reservation=half_reservation)
         )
@@ -84,6 +99,20 @@ class ReservationService:
         objects_on_date = self.time_interval_repository.get_all_by_date_and_room(date_time, room_id)
         obj_as_list = [{
             'start_date_time': i.start_date_time,
+            'reservation': {
+                'room': i.reservation.room.name,
+                'event': i.reservation.event.title,
+                'event_id': i.reservation.event.id,
+                'half_reservation': i.reservation.half_reservation,
+            }
+        } for i in objects_on_date]
+        return obj_as_list
+
+    def get_time_intervals_by_and_room(self, room_id: int):
+        objects_on_date = self.time_interval_repository.get_all_by_room(room_id)
+        obj_as_list = [{
+            'start_date_time': i.start_date_time,
+            'weekday': i.start_date_time.weekday(),
             'reservation': {
                 'room': i.reservation.room.name,
                 'event': i.reservation.event.title,

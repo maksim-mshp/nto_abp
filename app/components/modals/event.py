@@ -373,13 +373,9 @@ class EventModal:
             return
 
         if self.id is None:
-            res = event_service.create_event(
-                self.name.value.strip(),
-                self.date.value,
-                self.type.value,
-                self.description.value.strip(),
-                self.category,
-            )
+            res = event_service.create_event(self.name.value.strip(), self.date.value, self.category,
+                                             self.description.value.strip(),
+                                             self.type.value)
 
             reservation_service.create(
                 self.room.value,
@@ -388,8 +384,8 @@ class EventModal:
                 utils.STORAGE['half_reservation'],
             )
         else:
-            event_service.update_event(self.id, self.name.value.strip(), self.date.value, self.type.value,
-                                       self.description.value.strip(), self.category)
+            event_service.update_event(self.id, self.name.value.strip(), self.date.value, self.category,
+                                       self.description.value.strip(), self.type.value)
 
             if need_intervals_update:
                 reservation_service.update_by_id(

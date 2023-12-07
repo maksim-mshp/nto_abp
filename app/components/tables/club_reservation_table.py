@@ -192,7 +192,15 @@ class ReservationColumn(ft.UserControl):
         return column
 
     def get_booked_fields(self):
-        return reservation_service.get_time_intervals_by_date_and_room(self.date_time, self.room_id)
+        booked_fields = reservation_service.get_time_intervals_by_and_room(self.room_id)
+        column_booked = []
+        for field in booked_fields:
+            if field['weekday'] == self.date_time.weekday():
+                date_time = field['start_date_time']
+                date_time = date_time.replace(year=self.date_time.year, month=self.date_time.month, day=self.date_time.day)
+                field['start_date_time'] = date_time
+                column_booked.append(field)
+        return column_booked
 
 
 class ReservationTable(ft.UserControl):

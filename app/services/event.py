@@ -52,11 +52,11 @@ class EventService:
             event_id: int,
             name: str,
             date: datetime,
-            event_type: str,
-            club_type: str,
-            teacher: str,
+            category: str,
             description: str,
-            category: str
+            event_type: str | None = None,
+            club_type: str | None = None,
+            teacher: str | None = None,
     ) -> dict:
         event = {
             'title': name.strip(),
