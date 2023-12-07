@@ -235,8 +235,9 @@ class EventModal:
             self.description.value = event['description']
             self.reservation_id = reservation['reservation_id']
 
-            self.clubs_type.value = event_service.get_club_type_by_id(event['club_type_id'])
-            self.teacher.value = event_service.get_teacher_by_id(event['teacher_id'])['name']
+            if self.is_obr():
+                self.clubs_type.value = event_service.get_club_type_by_id(event['club_type_id'])
+                self.teacher.value = event_service.get_teacher_by_id(event['teacher_id'])['name']
 
             self.started_room_id = reservation['room_id']
             self.started_half_reservation = reservation['half_reservation']

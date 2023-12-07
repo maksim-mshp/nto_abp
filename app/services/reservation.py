@@ -5,7 +5,7 @@ from repositories.room import RoomRepository
 from repositories.time_interval import TimeIntervalRepository
 from repositories.reservation import ReservationRepository
 
-from utils import object_as_dict
+from utils import object_as_dict, STORAGE
 
 
 class ReservationService:
@@ -24,17 +24,25 @@ class ReservationService:
     ) -> dict:
         if club:
             start_intervals = intervals.copy()
+            if start_intervals[-1].month == 6:
+                end_month = 9
+            else:
+                end_month = 6
+
             run = True
             while run:
                 tmp_intervals = []
                 for i in start_intervals:
                     date_time = i + timedelta(days=7)
-                    if date_time.month != 6:
+                    if date_time.month != end_month:
                         tmp_intervals.append(i + timedelta(days=7))
                     else:
                         run = False
                 intervals.extend(tmp_intervals)
                 start_intervals = tmp_intervals.copy()
+
+            while intervals[0] < STORAGE['club_start_datetime']:
+                intervals.pop(0)
 
         reservation = object_as_dict(
             self.reservation_repository.create(room_id=room_id, event_id=event_id, half_reservation=half_reservation)

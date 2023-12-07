@@ -195,9 +195,12 @@ class ReservationColumn(ft.UserControl):
         booked_fields = reservation_service.get_time_intervals_by_and_room(self.room_id)
         column_booked = []
         for field in booked_fields:
-            if field['weekday'] == self.date_time.weekday():
+            if (field['weekday'] == self.date_time.weekday()
+                    and field['start_date_time'] > STORAGE.get('club_start_datetime', datetime(2023, 1, 1))):
+
                 date_time = field['start_date_time']
-                date_time = date_time.replace(year=self.date_time.year, month=self.date_time.month, day=self.date_time.day)
+                date_time = date_time.replace(year=self.date_time.year, month=self.date_time.month,
+                                              day=self.date_time.day)
                 field['start_date_time'] = date_time
                 if field not in column_booked:
                     column_booked.append(field)
