@@ -10,7 +10,7 @@ SELECTED_COLOR = ft.colors.LIGHT_BLUE
 BOOKED_COLOR = ft.colors.GREY
 NONE_COLOR = ft.colors.WHITE
 
-WEEKDAYS = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПН', 'СБ', 'ВС']
+WEEKDAYS = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС']
 WEEKDAYS2 = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
 
 
