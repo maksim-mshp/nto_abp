@@ -179,15 +179,12 @@ class ReservationService:
                             start_time = data_dict[key][i][j + 1]
                             end_time = data_dict[key][i][j + 1]
                     merge_data_dict[key][i].append({
-                            'teacher': teacher_room_dict[key][0],
-                            'room': teacher_room_dict[key][1],
-                            'start_time': start_time,
-                            'end_time': end_time + timedelta(hours=1),
-                        })
-        from rich import print
-        print(merge_data_dict)
+                        'teacher': teacher_room_dict[key][0],
+                        'room': teacher_room_dict[key][1],
+                        'start_time': start_time,
+                        'end_time': end_time + timedelta(hours=1),
+                    })
         return merge_data_dict
-
 
 
 reservation_service = ReservationService()
