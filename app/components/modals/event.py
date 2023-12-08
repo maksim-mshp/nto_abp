@@ -193,7 +193,7 @@ class EventModal:
         self.prepare_storage()
         self.close(clear=False)
         self.was_redirected = True
-        utils.on_page_change_func(new_index=3)
+        utils.on_page_change_func(new_index=4)
 
     def redirect_view_obr(self, e=None):
         utils.STORAGE['room_id'] = int(self.room.value)
@@ -204,7 +204,7 @@ class EventModal:
         self.close(clear=False)
         self.was_redirected = True
 
-        utils.on_page_change_func(new_index=4)
+        utils.on_page_change_func(new_index=5)
 
     def reset(self):
         self.name.error_text = None
