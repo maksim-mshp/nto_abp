@@ -84,14 +84,14 @@ class ClubsSchedule:
         self.dt.visible = False
         self.nothing.visible = False
 
-        if len([1]) == 0:
+        schedule = reservation_service.get_schedule_for_data_table()
+
+        if len(schedule) == 0:
             self.nothing.visible = True
             return
         else:
             self.dt.visible = True
             del self.dt.controls[1:]
-
-            schedule = reservation_service.get_schedule_for_data_table()
 
             for event_name, event in schedule.items():
                 self.add_row([
