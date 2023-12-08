@@ -290,6 +290,8 @@ class ReservationTable(ft.UserControl):
             hours = self.selected_fields[i].hour
             self.selected_fields[i] = date_times_list[self.selected_fields[i].weekday()].replace(hour=hours)
 
+        self.selected_fields = list(set(self.selected_fields))
+
         for i in range(1, self.days_count + 1):
             self.main_row.controls[i] = ReservationColumn(self.date_time + timedelta(days=i - 2), self.selected_fields,
                                                           self.reservation_tile_click, self.room_id,
