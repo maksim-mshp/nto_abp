@@ -229,6 +229,7 @@ class EventModal:
             self.started_room_id = None
             self.started_half_reservation = None
             self.half_reservation.value = None
+            self.half_reservation.visible = False
 
         else:
             event = event_service.get_event_by_id(self.id)
